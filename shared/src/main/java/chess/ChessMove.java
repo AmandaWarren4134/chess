@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -18,6 +20,10 @@ public class ChessMove {
         this.promotionPiece = promotionPiece;
     }
 
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+        this(startPosition, endPosition, null);
+    }
+
     /**
      * @return ChessPosition of starting location
      */
@@ -30,6 +36,33 @@ public class ChessMove {
      */
     public ChessPosition getEndPosition() {
         return endPosition;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startPosition, endPosition, promotionPiece);
+    }
+
+    /**
+     * @return boolean if chess piece endPosition is still on the board
+     */
+    public boolean isOnBoard() {
+        int row = endPosition.getRow();
+        int col = endPosition.getColumn();
+        if (row > 8 || row < 0 || col > 8 || col < 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
