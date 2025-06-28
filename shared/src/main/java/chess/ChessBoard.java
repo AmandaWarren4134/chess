@@ -57,5 +57,33 @@ public class ChessBoard {
      */
     public void resetBoard() {
         boardArray = new ChessPiece [8][8];
+        setUpPawns(2, ChessGame.TeamColor.WHITE);
+        setUpRank(1, ChessGame.TeamColor.WHITE);
+
+        setUpPawns(7, ChessGame.TeamColor.BLACK);
+        setUpRank(8, ChessGame.TeamColor.BLACK);
+    }
+
+    private void setUpPawns(int row, ChessGame.TeamColor color) {
+        for (int col=1; col < 9; col++) {
+            addPiece(new ChessPosition(row, col), new ChessPiece(color, ChessPiece.PieceType.PAWN));
+        }
+    }
+
+    private void setUpRank(int row, ChessGame.TeamColor color) {
+        ChessPiece.PieceType[] order = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK
+        };
+
+        for (int col = 1; col < 9; col++) {
+            addPiece(new ChessPosition(row, col), new ChessPiece(color, order[col -1]));
+        }
     }
 }
