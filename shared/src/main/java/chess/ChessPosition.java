@@ -46,4 +46,11 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+
+    /**
+     * @return boolean if chess piece endPosition is still on the board
+     */
+    public boolean isOnBoard() {
+        return row <= 8 && row >= 1 && col <= 8 && col >= 1;
+    }
 }

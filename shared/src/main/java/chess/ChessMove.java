@@ -53,19 +53,6 @@ public class ChessMove {
     }
 
     /**
-     * @return boolean if chess piece endPosition is still on the board
-     */
-    public boolean isOnBoard() {
-        int row = endPosition.getRow();
-        int col = endPosition.getColumn();
-        if (row > 8 || row < 0 || col > 8 || col < 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
      * chess move
      *

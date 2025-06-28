@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 public class QueenMove {
 
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<ChessMove>();
 
 

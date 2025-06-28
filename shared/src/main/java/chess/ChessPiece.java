@@ -66,6 +66,8 @@ public class ChessPiece {
                 return KingMove.calculateMoves(board, myPosition, this);
             case QUEEN:
                 return QueenMove.calculateMoves(board, myPosition, this);
+            default:
+                return new HashSet<>();
         }
     }
 
