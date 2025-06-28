@@ -21,9 +21,6 @@ public class KnightMove {
                 }
             }
         }
-
-
-
         return moves;
     }
 }
