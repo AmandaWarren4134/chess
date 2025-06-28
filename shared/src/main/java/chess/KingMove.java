@@ -15,9 +15,12 @@ public class KingMove {
                 int nextRow = myPosition.getRow() + i;
                 int nextColumn = myPosition.getColumn() + j;
                 ChessPosition nextPosition = new ChessPosition(nextRow, nextColumn);
-                ChessMove possibleMove = new ChessMove(myPosition, nextPosition);
+
                 if (nextPosition.isOnBoard()) {
-                    moves.add(possibleMove);
+                    ChessPiece targetPiece = board.getPiece(nextPosition);
+                    if (targetPiece == null || targetPiece.getTeamColor() != piece.getTeamColor()) {
+                        moves.add(new ChessMove(myPosition, nextPosition));
+                    }
                 }
             }
         }
