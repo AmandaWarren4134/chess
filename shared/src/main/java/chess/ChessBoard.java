@@ -10,21 +10,6 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(boardArray, that.boardArray);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(boardArray);
-    }
-
-    private ChessPiece [][] boardArray;
 
     public ChessBoard() {
         boardArray = new ChessPiece [8][8];
@@ -50,6 +35,41 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         return boardArray[position.getRow() - 1][position.getColumn() - 1];
     }
+
+    /**
+     * Creates a deep copy of the board
+     * (Returns the copy)
+     */
+    @Override
+    public ChessBoard clone() {
+        ChessBoard clone = new ChessBoard();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece originalPiece = this.boardArray[i][j];
+                if (originalPiece != null) {
+                    ChessPiece clonePiece = new ChessPiece(originalPiece.getTeamColor(), originalPiece.getPieceType());
+                    ChessPosition clonePosition = new ChessPosition(i+1, j+1);
+                    clone.addPiece(clonePosition, clonePiece);
+                }
+            }
+        }
+        return clone;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(boardArray, that.boardArray);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(boardArray);
+    }
+
+    private ChessPiece [][] boardArray;
 
     /**
      * Sets the board to the default starting board

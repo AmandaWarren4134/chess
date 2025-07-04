@@ -10,24 +10,28 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private TeamColor currentTeam = TeamColor.WHITE;
+    private ChessBoard myBoard = new ChessBoard();
 
+
+    public ChessGame() {
+        myBoard.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return currentTeam;
     }
 
     /**
-     * Set's which teams turn it is
+     * Sets which team's turn it is
      *
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        currentTeam = team;
     }
 
     /**
@@ -46,7 +50,12 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece currentPiece = myBoard.getPiece(startPosition);
+        Collection <ChessMove> pieceMoves = currentPiece.pieceMoves(myBoard, startPosition);
+        for (ChessMove move : pieceMoves) {
+
+        }
+        return pieceMoves;
     }
 
     /**

@@ -11,3 +11,4 @@ out/
 
 ### Chess project ###
 server/**/db.properties
+../starter-code/1-chess-game/passoff/chess/shared/
