@@ -10,12 +10,6 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece [][] boardArray;
-
-    public ChessBoard() {
-        boardArray = new ChessPiece [8][8];
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -28,6 +22,12 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(boardArray);
+    }
+
+    private ChessPiece [][] boardArray;
+
+    public ChessBoard() {
+        boardArray = new ChessPiece [8][8];
     }
 
     /**

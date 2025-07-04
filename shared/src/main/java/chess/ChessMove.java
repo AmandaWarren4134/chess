@@ -21,6 +21,7 @@ public class ChessMove {
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+
         this(startPosition, endPosition, null);
     }
 
