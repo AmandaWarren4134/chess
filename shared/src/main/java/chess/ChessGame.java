@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -50,12 +52,45 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        HashSet<ChessMove> valid = new HashSet<>();
         ChessPiece currentPiece = myBoard.getPiece(startPosition);
+        if (currentPiece == null) {
+            return null;
+        }
         Collection <ChessMove> pieceMoves = currentPiece.pieceMoves(myBoard, startPosition);
         for (ChessMove move : pieceMoves) {
-
+            ChessBoard newBoard = myBoard.copyBoard();
+            movePiece(newBoard, move);
+            if (isInCheck(currentTeam)){
+                break;
+            }
+            else {
+                valid.add(move);
+            }
         }
         return pieceMoves;
+    }
+
+    private void movePiece(ChessBoard board, ChessMove move) {
+        ChessPosition from = move.getStartPosition();
+        ChessPosition to = move.getEndPosition();
+        ChessPiece piece = board.getPiece(from);
+        board.addPiece(to, piece);
+        board.removePiece(from);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return currentTeam == chessGame.currentTeam && Objects.equals(myBoard, chessGame.myBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentTeam, myBoard);
     }
 
     /**
@@ -65,7 +100,21 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition to = move.getEndPosition();
+        ChessPosition from = move.getStartPosition();
+        ChessPiece piece = myBoard.getPiece(move.getStartPosition());
+        if (piece == null) {
+            throw new NullPointerException();
+        }
+        if (piece.getTeamColor() != currentTeam) {
+            throw new InvalidMoveException("Invalid move: It is not this color's turn.");
+        }
+
+        ChessMove nextMove = new ChessMove(from, to);
+        if (!)
+        if (move.getPromotionPiece() != null) {
+
+        }
     }
 
     /**
@@ -75,7 +124,34 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean check = false;
+        ChessPosition kingPosition = getKingPosition(teamColor);
+        for (int row=1; row <= 8; row++) {
+            for (int col=1; col <= 8; col++) {
+                if (myBoard.getPiece(new ChessPosition (row, col)) != null) {
+                    ChessPiece piece = myBoard.getPiece(new ChessPosition (row, col));
+                    Collection <ChessMove> possibleMoves = piece.pieceMoves(myBoard, new ChessPosition(row, col));
+                    for (ChessMove move: possibleMoves) {
+                        if (move.getEndPosition() == kingPosition) {
+                            check = true;
+                        }
+                    }
+                }
+            }
+        }
+        return check;
+    }
+
+    public ChessPosition getKingPosition(TeamColor teamColor) {
+        for (int row=1; row <= 8; row++) {
+            for (int col=1; col <= 8; col++) {
+                ChessPiece piece = myBoard.getPiece(new ChessPosition(row, col));
+                if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
+                    return new ChessPosition(row, col);
+                }
+            }
+        }
+        throw new RuntimeException("The King is not on the board.");
     }
 
     /**

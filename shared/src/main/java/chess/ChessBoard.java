@@ -26,6 +26,15 @@ public class ChessBoard {
     }
 
     /**
+     * Removes a chess piece from the chessboard and replaces it with null
+     *
+     * @param position where to add the piece to
+     */
+    public void removePiece(ChessPosition position) {
+        boardArray[position.getRow() - 1][position.getColumn() - 1] = null;
+    }
+
+    /**
      * Gets a chess piece on the chessboard
      *
      * @param position The position to get the piece from
@@ -40,8 +49,8 @@ public class ChessBoard {
      * Creates a deep copy of the board
      * (Returns the copy)
      */
-    @Override
-    public ChessBoard clone() {
+
+    public ChessBoard copyBoard() {
         ChessBoard clone = new ChessBoard();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
