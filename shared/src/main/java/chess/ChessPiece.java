@@ -53,22 +53,15 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        switch (this.type) {
-            case KNIGHT:
-                return KnightMove.calculateMoves(board, myPosition, this);
-            case BISHOP:
-                return BishopMove.calculateMoves(board, myPosition, this);
-            case ROOK:
-                return RookMove.calculateMoves(board, myPosition, this);
-            case PAWN:
-                return PawnMove.calculateMoves(board, myPosition, this);
-            case KING:
-                return KingMove.calculateMoves(board, myPosition, this);
-            case QUEEN:
-                return QueenMove.calculateMoves(board, myPosition, this);
-            default:
-                return new HashSet<>();
-        }
+        return switch (this.type) {
+            case KNIGHT -> KnightMove.calculateMoves(board, myPosition, this);
+            case BISHOP -> BishopMove.calculateMoves(board, myPosition, this);
+            case ROOK -> RookMove.calculateMoves(board, myPosition, this);
+            case PAWN -> PawnMove.calculateMoves(board, myPosition, this);
+            case KING -> KingMove.calculateMoves(board, myPosition, this);
+            case QUEEN -> QueenMove.calculateMoves(board, myPosition, this);
+            default -> new HashSet<>();
+        };
     }
 
     @Override

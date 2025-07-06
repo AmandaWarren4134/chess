@@ -21,14 +21,14 @@ public class PawnMove {
             }
 
             ChessPosition enemyLeft = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() -1);
-            if (enemyLeft.isOnBoard()) {
+            if (enemyLeft.isOnBoard() && myPosition.getColumn() > 1) {
                 ChessPiece leftTarget = board.getPiece(enemyLeft);
                 if (leftTarget != null && leftTarget.getTeamColor() != piece.getTeamColor()) {
                     pawnMovements.add(new int[]{1, -1});
                 }
             }
             ChessPosition enemyRight = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() +1);
-            if (enemyRight.isOnBoard()) {
+            if (enemyRight.isOnBoard() && myPosition.getColumn() < 8) {
                 ChessPiece rightTarget = board.getPiece(enemyRight);
                 if (rightTarget != null && rightTarget.getTeamColor() != piece.getTeamColor()) {
                     pawnMovements.add(new int[]{1, 1});
