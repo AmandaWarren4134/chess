@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class PawnMove {
-    public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, ChessMove lastMove) {
         Collection<ChessMove> moves = new HashSet<ChessMove>();
         int direction = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
         int startRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
@@ -28,6 +28,29 @@ public class PawnMove {
                         ChessPosition twoStepsForward = new ChessPosition(twoStepRow, currentCol);
                         if (board.getPiece(twoStepsForward) == null) {
                             moves.add(new ChessMove(myPosition, twoStepsForward));
+                        }
+                    }
+                }
+            }
+        }
+
+        // En Passant
+        if (lastMove != null) {
+            ChessPiece lastMovedPiece = board.getPiece(lastMove.getEndPosition());
+            if (lastMovedPiece != null && lastMovedPiece.getPieceType() == ChessPiece.PieceType.PAWN && lastMovedPiece.getTeamColor() != piece.getTeamColor()) {
+                int lastStartRow = lastMove.getStartPosition().getRow();
+                int lastEndRow = lastMove.getEndPosition().getRow();
+                int lastEndCol = lastMove.getEndPosition().getColumn();
+
+                if (Math.abs(lastEndRow - lastStartRow) == 2) {
+                    int enPassantRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 5 : 4;
+                    if (Math.abs(lastEndCol - myPosition.getColumn()) == 1 && myPosition.getRow() == enPassantRow) {
+                        int enpassant = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
+                        int captureRow = myPosition.getRow() + enpassant;
+                        ChessPosition enPassantCapture = new ChessPosition(captureRow, lastEndCol);
+
+                        if (board.getPiece(enPassantCapture) == null) {
+                            moves.add(new ChessMove(myPosition, enPassantCapture));
                         }
                     }
                 }

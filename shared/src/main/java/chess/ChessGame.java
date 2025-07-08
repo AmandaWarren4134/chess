@@ -14,6 +14,7 @@ public class ChessGame {
 
     private TeamColor currentTeam = TeamColor.WHITE;
     private ChessBoard myBoard = new ChessBoard();
+    public static ChessMove lastMove = null;
 
     @Override
     public boolean equals(Object o) {
@@ -88,12 +89,21 @@ public class ChessGame {
     private void movePiece(ChessBoard board, ChessMove move) {
         ChessPosition from = move.getStartPosition();
         ChessPosition to = move.getEndPosition();
+        ChessPiece piece = board.getPiece(from);
+
+        // Detect En Passant
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && Math.abs(from.getColumn() - to.getColumn()) == 1 && board.getPiece(to) == null) {
+            int capturedRow = (piece.getTeamColor() == TeamColor.WHITE) ? to.getRow() - 1 : to.getRow() + 1;
+            ChessPosition capturedPawnPosition = new ChessPosition(capturedRow, to.getColumn());
+            board.removePiece(capturedPawnPosition);
+        }
+
         if (move.getPromotionPiece() != null) {
             ChessPiece promotedPiece = new ChessPiece(currentTeam, move.getPromotionPiece());
             board.addPiece(to, promotedPiece);
         } else {
-            ChessPiece piece = board.getPiece(from);
-            board.addPiece(to, piece);
+            ChessPiece promotedPiece = board.getPiece(from);
+            board.addPiece(to, promotedPiece);
         }
         board.removePiece(from);
     }
@@ -116,6 +126,7 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move: This piece cannot move to this space.");
         }
         movePiece(myBoard, move);
+        lastMove = move;
         if (currentTeam == TeamColor.WHITE) {
             currentTeam = TeamColor.BLACK;
         } else {

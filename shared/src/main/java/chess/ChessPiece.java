@@ -57,7 +57,7 @@ public class ChessPiece {
             case KNIGHT -> KnightMove.calculateMoves(board, myPosition, this);
             case BISHOP -> BishopMove.calculateMoves(board, myPosition, this);
             case ROOK -> RookMove.calculateMoves(board, myPosition, this);
-            case PAWN -> PawnMove.calculateMoves(board, myPosition, this);
+            case PAWN -> PawnMove.calculateMoves(board, myPosition, this, ChessGame.lastMove);
             case KING -> KingMove.calculateMoves(board, myPosition, this);
             case QUEEN -> QueenMove.calculateMoves(board, myPosition, this);
             default -> new HashSet<>();

@@ -24,6 +24,7 @@ public class KingMove {
                 }
             }
         }
+
         return moves;
     }
 }
