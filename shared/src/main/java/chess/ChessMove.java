@@ -63,10 +63,4 @@ public class ChessMove {
         return promotionPiece;
     }
 
-    /**
-     * Updates the type of piece to promote a pawn to
-     */
-    private void updatePromotionPiece(ChessPiece.PieceType promoted_piece) {
-        this.promotionPiece = promoted_piece;
-    }
 }

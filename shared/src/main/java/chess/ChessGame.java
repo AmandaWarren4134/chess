@@ -15,6 +15,19 @@ public class ChessGame {
     private TeamColor currentTeam = TeamColor.WHITE;
     private ChessBoard myBoard = new ChessBoard();
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return currentTeam == chessGame.currentTeam && Objects.equals(myBoard, chessGame.myBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentTeam, myBoard);
+    }
 
     public ChessGame() {
         myBoard.resetBoard();
@@ -75,23 +88,14 @@ public class ChessGame {
     private void movePiece(ChessBoard board, ChessMove move) {
         ChessPosition from = move.getStartPosition();
         ChessPosition to = move.getEndPosition();
-        ChessPiece piece = board.getPiece(from);
-        board.addPiece(to, piece);
-        board.removePiece(from);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        if (move.getPromotionPiece() != null) {
+            ChessPiece promotedPiece = new ChessPiece(currentTeam, move.getPromotionPiece());
+            board.addPiece(to, promotedPiece);
+        } else {
+            ChessPiece piece = board.getPiece(from);
+            board.addPiece(to, piece);
         }
-        ChessGame chessGame = (ChessGame) o;
-        return currentTeam == chessGame.currentTeam && Objects.equals(myBoard, chessGame.myBoard);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(currentTeam, myBoard);
+        board.removePiece(from);
     }
 
     /**
@@ -131,7 +135,6 @@ public class ChessGame {
             for (int col = 1; col <= 8; col++) {
                 if (myBoard.getPiece(new ChessPosition(row, col)) != null) {
                     ChessPiece piece = myBoard.getPiece(new ChessPosition(row, col));
-                    System.out.print("is checking King, piece: " + piece.getTeamColor() + piece.getPieceType() + "\n");
                     Collection<ChessMove> possibleMoves = piece.pieceMoves(myBoard, new ChessPosition(row, col));
                     for (ChessMove move : possibleMoves) {
                         if (move.getEndPosition().equals(kingPosition)) {
@@ -150,7 +153,6 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = myBoard.getPiece(position);
                 if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
-                    System.out.print("King position: " + position.getRow() + ", " + position.getColumn() + "\n");
                     return position;
                 }
             }
@@ -165,7 +167,26 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean escapeByCapture = false;
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = myBoard.getPiece(new ChessPosition(row, col));
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> validMoves = validMoves(new ChessPosition(row, col));
+                    ChessBoard originalBoard = myBoard;
+                    for (ChessMove move : validMoves) {
+                        ChessBoard newBoard = myBoard.copyBoard();
+                        movePiece(newBoard, move);
+                        myBoard = newBoard;
+                        if (!isInCheck(teamColor)) {
+                            escapeByCapture = true;
+                        }
+                        myBoard = originalBoard;
+                    }
+                }
+            }
+        }
+        return isInCheck(teamColor) && validMoves(getKingPosition(teamColor)).isEmpty() && !escapeByCapture;
     }
 
     /**
