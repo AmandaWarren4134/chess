@@ -1,6 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import dataaccess.BadRequestException;
 import dataaccess.DataAccessException;
 import service.UserService;
 import service.request.RegisterRequest;
@@ -27,11 +28,19 @@ public class RegisterHandler implements Route {
         try {
             RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
 
+            // Check for bad request
+            userService.validateRegisterRequest(registerRequest);
+
             RegisterResult result = userService.register(registerRequest);
 
             response.status(200);
             response.type("application/json");
             return gson.toJson(Map.of("username", result.username(), "authToken", result.authToken()));
+        } catch (BadRequestException e) {
+            response.status(400);
+            response.type("application/json");
+
+            return gson.toJson(Map.of("message", "Error: bad request"));
         } catch (DataAccessException e ) {
             response.status(403);
             response.type("application/json");

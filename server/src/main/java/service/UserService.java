@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import dataaccess.*;
 import service.request.RegisterRequest;
 import service.response.RegisterResult;
 
@@ -19,6 +16,12 @@ public class UserService {
         this.gameDAO = new GameDAO();
     }
 
+    public void validateRegisterRequest(RegisterRequest registerRequest) throws BadRequestException {
+        // Validate request fields
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null || registerRequest.username().isBlank() || registerRequest.password().isBlank() || registerRequest.email().isBlank()){
+            throw new BadRequestException("Error: bad request - one or more fields are missing.");
+        }
+    }
     /***
      * Accepts a RegisterRequest and returns the RegisterResult
      *
@@ -26,12 +29,6 @@ public class UserService {
      * @return
      */
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-
-        // Validate request fields
-        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null || registerRequest.username().isBlank() || registerRequest.password().isBlank() || registerRequest.email().isBlank()){
-            throw new DataAccessException("Error: bad request - one or more fields are missing.");
-        }
-
         // Create user
         userDAO.createUser(registerRequest.username(), registerRequest.password(), registerRequest.email());
 
