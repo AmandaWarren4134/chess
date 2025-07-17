@@ -1,12 +1,15 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import service.UserService;
 import service.request.RegisterRequest;
 import service.response.RegisterResult;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import java.util.Map;
 
 
 public class RegisterHandler implements Route {
@@ -21,11 +24,24 @@ public class RegisterHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
+        try {
+            RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
 
-        RegisterResult result = userService.register(registerRequest);
+            RegisterResult result = userService.register(registerRequest);
 
-        response.type("application/json");
-        return gson.toJson(result);
+            response.status(200);
+            response.type("application/json");
+            return gson.toJson(Map.of("username", result.username(), "authToken", result.authToken()));
+        } catch (DataAccessException e ) {
+            response.status(403);
+            response.type("application/json");
+
+            return gson.toJson(Map.of("message", "Error: already taken."));
+        } catch (Exception e) {
+            response.status(500);
+            response.type("application/json");
+
+            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
+        }
     }
 }

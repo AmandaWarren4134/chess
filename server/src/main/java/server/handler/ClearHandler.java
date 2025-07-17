@@ -1,5 +1,6 @@
 package server.handler;
 
+import com.google.gson.Gson;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -11,11 +12,13 @@ public class ClearHandler implements Route {
     private final UserService userService;
     private final AuthService authService;
     private final GameService gameService;
+    private final Gson gson;
 
     public ClearHandler(UserService userService, GameService gameService, AuthService authService) {
         this.userService = userService;
         this.authService = authService;
         this.gameService = gameService;
+        this.gson = new Gson();
     }
 
     @Override
@@ -26,7 +29,7 @@ public class ClearHandler implements Route {
             gameService.clearGameData();
 
             response.status(200);
-            return "Database successfully cleared.";
+            return "{}";
         } catch (Exception e) {
             response.status(500);
             return "Error clearing database: " + e.getMessage();

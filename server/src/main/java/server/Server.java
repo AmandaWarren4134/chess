@@ -22,7 +22,7 @@ public class Server {
         RegisterHandler registerHandler = new RegisterHandler(userService);
         ClearHandler clearHandler = new ClearHandler(userService, gameService, authService);
 
-        Spark.post("/register", registerHandler);
+        Spark.post("/user", registerHandler);
         Spark.delete("/db", clearHandler);
 
         Spark.awaitInitialization();
