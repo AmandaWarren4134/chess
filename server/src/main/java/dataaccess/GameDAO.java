@@ -20,11 +20,9 @@ public class GameDAO implements IGameDAO {
     public int createGame(String gameName){
         Random random = new Random();
         int gameID = random.nextInt(Integer.MAX_VALUE) + 1;
-        String whiteUsername = "";
-        String blackUsername = "";
         ChessGame game = new ChessGame();
 
-        GameData newGame = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+        GameData newGame = new GameData(gameID, null, null, gameName, game);
         gameList.put(gameID, newGame);
 
         return gameID;
@@ -39,11 +37,10 @@ public class GameDAO implements IGameDAO {
      */
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        GameData gameData = gameList.get(gameID);
-        if (gameData == null) {
-            throw new DataAccessException("Game " + gameID + " not found.");
+        if (!gameList.containsKey(gameID)) {
+            throw new DataAccessException("Game with ID " + gameID + " does not exist.");
         }
-        return gameData;
+        return gameList.get(gameID);
     }
 
     /***
@@ -59,18 +56,16 @@ public class GameDAO implements IGameDAO {
     /***
      * Updates the game in the hashmap by replacing its value at the gameID key
      *
-     * @param username
-     * @param playerColor
      * @param gameID
      * @param game
      * @throws DataAccessException
      */
     @Override
-    public void updateGame(String username, ChessGame.TeamColor playerColor, int gameID, ChessGame game) throws DataAccessException {
-        GameData gameData = getGame(gameID);
-
-        GameData updatedGameData = gameData.update(username, playerColor, game);
-        gameList.put(gameID, updatedGameData);
+    public void updateGame(int gameID, GameData game) throws DataAccessException {
+        if (!gameList.containsKey(gameID)) {
+            throw new DataAccessException("Game with ID " + gameID + " does not exist.");
+        }
+        gameList.put(gameID, game);
     }
 
     public void clearAllGames() {

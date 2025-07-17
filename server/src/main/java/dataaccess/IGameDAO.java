@@ -9,6 +9,5 @@ public interface IGameDAO {
     int createGame(String gameName);
     GameData getGame(int gameID) throws DataAccessException;
     ArrayList<GameData> listGames();
-    void updateGame(String username, ChessGame.TeamColor playerColor, int gameID, ChessGame game) throws DataAccessException;
-
+    void updateGame(int gameID, GameData game) throws DataAccessException;
 }

@@ -1,36 +1,31 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataaccess.BadRequestException;
-import dataaccess.InvalidPasswordException;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import service.GameService;
-import service.request.CreateRequest;
-import service.request.LogoutRequest;
-import service.response.CreateResult;
-import service.response.LogoutResult;
+import service.request.JoinRequest;
+import service.response.JoinResult;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 import java.util.Map;
 
-public class CreateHandler implements Route {
+public class JoinHandler implements Route {
     private final GameService gameService;
     private final Gson gson;
 
-    public CreateHandler(GameService gameService) {
+    public JoinHandler(GameService gameService) {
         this.gameService = gameService;
         this.gson = new Gson();
     }
-
     @Override
     public Object handle(Request request, Response response) throws Exception {
         try {
             String authToken = request.headers("authorization");
-            CreateRequest bodyRequest = gson.fromJson(request.body(), CreateRequest.class);
-            CreateRequest createRequest = new CreateRequest(bodyRequest.gameName(), authToken);
-            CreateResult result = gameService.create(createRequest);
+            JoinRequest bodyRequest = gson.fromJson(request.body(), JoinRequest.class);
+            JoinRequest joinRequest = new JoinRequest(authToken, bodyRequest.playerColor(), bodyRequest.gameID());
+            JoinResult result = gameService.join(joinRequest);
 
             response.status(200);
             response.type("application/json");
@@ -45,6 +40,11 @@ public class CreateHandler implements Route {
             response.type("application/json");
 
             return gson.toJson(Map.of("message", "Error: unauthorized"));
+        } catch (AlreadyTakenException e) {
+            response.status(403);
+            response.type("application/json");
+
+            return gson.toJson(Map.of("message", "Error: already taken"));
         } catch (Exception e) {
             response.status(500);
             response.type("application/json");
