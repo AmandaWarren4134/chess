@@ -35,7 +35,7 @@ public class GameService {
     }
 
     private void validateCreateRequest(CreateRequest request) throws DataAccessException {
-        if (request.gameName() == null || request.gameName().isBlank()){
+        if (request.gameName() == null || request.gameName().isBlank() || request.authToken() == null || request.authToken().isBlank()){
             throw new BadRequestException("Error: bad request.");
         }
     }

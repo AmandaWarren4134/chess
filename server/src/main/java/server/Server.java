@@ -32,14 +32,14 @@ public class Server {
         LoginHandler loginHandler = new LoginHandler(userService);
         LogoutHandler logoutHandler = new LogoutHandler(userService);
         ListHandler listHandler = new ListHandler(gameService);
-        //CreateHandler createHandler = new CreateHandler();
+        CreateHandler createHandler = new CreateHandler(gameService);
         //JoinHandler joinHandler = new JoinHandler();
 
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
         Spark.delete("/session", logoutHandler);
         Spark.get("/game", listHandler);
-//        Spark.post("/game", createHandler);
+        Spark.post("/game", createHandler);
 //        Spark.put("/game", joinHandler);
         Spark.delete("/db", clearHandler);
 

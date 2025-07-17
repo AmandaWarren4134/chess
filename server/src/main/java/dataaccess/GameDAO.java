@@ -19,7 +19,7 @@ public class GameDAO implements IGameDAO {
     @Override
     public int createGame(String gameName){
         Random random = new Random();
-        int gameID = random.nextInt();
+        int gameID = random.nextInt(Integer.MAX_VALUE) + 1;
         String whiteUsername = "";
         String blackUsername = "";
         ChessGame game = new ChessGame();
