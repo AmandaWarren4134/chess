@@ -51,14 +51,31 @@ public class UserService {
         }
     }
 
+    public void validatePassword(UserData userData, LoginRequest request) throws InvalidPasswordException {
+        if (!userData.password().equals(request.password())) {
+            throw new InvalidPasswordException("Error: unauthorized");
+        }
+    }
+
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         validateLoginRequest(loginRequest);
 
         // Get User
-        UserData userData = userDAO.getUser(loginRequest.username());
-        if (userData.password() != loginRequest.password()) {
-            throw InvalidPasswordException
+        UserData userData;
+        try {
+            userData = userDAO.getUser(loginRequest.username());
+        } catch (DataAccessException ex) {
+            throw new UnauthorizedException("Error: username does not exist.");
         }
+
+        // Validate Password
+        validatePassword(userData, loginRequest);
+
+        // Generate auth token
+        String newAuthToken = authDAO.createAuth(loginRequest.username());
+
+        // Return LoginResult
+        return new LoginResult(userData.username(), newAuthToken);
     }
 //    public void logout(LogoutRequest logoutRequest) {}
     public void clearUserData() {
