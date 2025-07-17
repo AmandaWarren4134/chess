@@ -8,6 +8,7 @@ import passoff.model.TestCreateRequest;
 import passoff.model.TestUser;
 import passoff.server.TestServerFacade;
 import server.Server;
+import service.request.LoginRequest;
 import service.request.RegisterRequest;
 import service.response.RegisterResult;
 
@@ -43,5 +44,19 @@ class UserServiceTest {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
             testUserService.register(testRequest);
         });
+    }
+
+    @Test
+    @DisplayName("Positive Login")
+    public void normalLogin() {
+        LoginRequest testRequest = new LoginRequest("Amanda", "abcdefg");
+        try {
+            RegisterResult result = testUserService.register(testRequest);
+            assertNotNull(result);
+            assertEquals("Amanda", result.username());
+            assertNotNull(result.authToken());
+        } catch (DataAccessException ex) {
+            System.err.print("Database error during registration: " + ex.getMessage());
+        }
     }
 }

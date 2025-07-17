@@ -1,5 +1,6 @@
 package server;
 
+import server.handler.LoginHandler;
 import server.handler.RegisterHandler;
 import server.handler.ClearHandler;
 import service.AuthService;
@@ -21,14 +22,14 @@ public class Server {
 
         RegisterHandler registerHandler = new RegisterHandler(userService);
         ClearHandler clearHandler = new ClearHandler(userService, gameService, authService);
-        //LoginHandler loginHandler = new LoginHandler();
+        LoginHandler loginHandler = new LoginHandler(userService);
         //LogoutHandler logoutHandler = new LogoutHandler();
         //ListHandler listHandler = new ListHandler();
         //CreateHandler createHandler = new CreateHandler();
         //JoinHandler joinHandler = new JoinHandler();
 
         Spark.post("/user", registerHandler);
-//        Spark.post("/session", loginHandler);
+        Spark.post("/session", loginHandler);
 //        Spark.delete("/session", logoutHandler);
 //        Spark.get("/game", listHandler);
 //        Spark.post("/game", createHandler);
