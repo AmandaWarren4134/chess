@@ -2,7 +2,9 @@ package service;
 
 import Model.UserData;
 import dataaccess.*;
+import service.request.LogoutRequest;
 import service.request.RegisterRequest;
+import service.response.LogoutResult;
 import service.response.RegisterResult;
 import service.response.LoginResult;
 import service.request.LoginRequest;
@@ -19,12 +21,6 @@ public class UserService {
         this.gameDAO = new GameDAO();
     }
 
-    public void validateRegisterRequest(RegisterRequest registerRequest) throws BadRequestException {
-        // Validate request fields
-        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null || registerRequest.username().isBlank() || registerRequest.password().isBlank() || registerRequest.email().isBlank()){
-            throw new BadRequestException("Error: bad request - one or more fields are missing.");
-        }
-    }
     /***
      * Accepts a RegisterRequest and returns the RegisterResult
      *
@@ -32,6 +28,7 @@ public class UserService {
      * @return
      */
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+        // Validate Request
         validateRegisterRequest(registerRequest);
 
         // Create user
@@ -44,20 +41,21 @@ public class UserService {
         return new RegisterResult(registerRequest.username(), newAuthToken);
     }
 
-    public void validateLoginRequest(LoginRequest request) throws BadRequestException {
-        // Validate request fields
-        if (request.username() == null || request.password() == null || request.username().isBlank() || request.password().isBlank()){
+    private void validateRegisterRequest(RegisterRequest registerRequest) throws BadRequestException {
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null || registerRequest.username().isBlank() || registerRequest.password().isBlank() || registerRequest.email().isBlank()){
             throw new BadRequestException("Error: bad request - one or more fields are missing.");
         }
     }
 
-    public void validatePassword(UserData userData, LoginRequest request) throws InvalidPasswordException {
-        if (!userData.password().equals(request.password())) {
-            throw new InvalidPasswordException("Error: unauthorized");
-        }
-    }
-
+    /***
+     * Accepts LoginRequest and returns LoginResult
+     *
+     * @param loginRequest
+     * @return
+     * @throws DataAccessException
+     */
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        // Validate Request
         validateLoginRequest(loginRequest);
 
         // Get User
@@ -77,7 +75,39 @@ public class UserService {
         // Return LoginResult
         return new LoginResult(userData.username(), newAuthToken);
     }
-//    public void logout(LogoutRequest logoutRequest) {}
+
+    private void validateLoginRequest(LoginRequest request) throws BadRequestException {
+        if (request.username() == null || request.password() == null || request.username().isBlank() || request.password().isBlank()){
+            throw new BadRequestException("Error: bad request - one or more fields are missing.");
+        }
+    }
+
+    private void validatePassword(UserData userData, LoginRequest request) throws InvalidPasswordException {
+        if (!userData.password().equals(request.password())) {
+            throw new InvalidPasswordException("Error: unauthorized");
+        }
+    }
+
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
+        // Validate Request
+        validateLogoutRequest(logoutRequest);
+
+        // Get AuthData
+        try {
+            authDAO.deleteAuth(logoutRequest.authToken());
+        } catch (DataAccessException ex) {
+            throw new UnauthorizedException("Error: authToken does not exist.");
+        }
+
+        return new LogoutResult();
+    }
+
+    private void validateLogoutRequest(LogoutRequest request) throws BadRequestException {
+        if (request.authToken() == null || request.authToken().isBlank()) {
+            throw new BadRequestException("Error: bad request - one or more fields are missing.");
+        }
+    }
+
     public void clearUserData() {
         userDAO.clearAllUsers();
     }

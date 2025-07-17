@@ -10,6 +10,7 @@ import passoff.server.TestServerFacade;
 import server.Server;
 import service.request.LoginRequest;
 import service.request.RegisterRequest;
+import service.response.LoginResult;
 import service.response.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +22,7 @@ class UserServiceTest {
     @BeforeEach
     public void setUp() {
         testUserService = new UserService();
+
     }
 
     @Test
@@ -49,14 +51,38 @@ class UserServiceTest {
     @Test
     @DisplayName("Positive Login")
     public void normalLogin() {
-        LoginRequest testRequest = new LoginRequest("Amanda", "abcdefg");
+        RegisterRequest registerRequest = new RegisterRequest("perfectUser", "perfect", "perfect@gmail.com");
         try {
-            RegisterResult result = testUserService.register(testRequest);
-            assertNotNull(result);
-            assertEquals("Amanda", result.username());
-            assertNotNull(result.authToken());
+            testUserService.register(registerRequest);
         } catch (DataAccessException ex) {
             System.err.print("Database error during registration: " + ex.getMessage());
         }
+        LoginRequest loginRequest = new LoginRequest("perfectUser", "perfect");
+
+        try {
+            LoginResult result = testUserService.login(loginRequest);
+            assertNotNull(result);
+            assertEquals("perfectUser", result.username());
+            assertNotNull(result.authToken());
+        } catch (DataAccessException ex) {
+            System.err.print("Database error during login: " + ex.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Negative Login")
+    public void wrongPasswordLogin() {
+        RegisterRequest registerRequest = new RegisterRequest("imperfectUser", "perfect", "perfect@gmail.com");
+        try {
+            testUserService.register(registerRequest);
+        } catch (DataAccessException ex) {
+            System.err.print("Database error during registration: " + ex.getMessage());
+        }
+
+        LoginRequest loginRequest = new LoginRequest("imperfectUser", "imperfect");
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            testUserService.login(loginRequest);
+        });
+
     }
 }
