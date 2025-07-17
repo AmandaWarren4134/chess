@@ -29,6 +29,8 @@ public class UserService {
      * @return
      */
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+        validateRegisterRequest(registerRequest);
+
         // Create user
         userDAO.createUser(registerRequest.username(), registerRequest.password(), registerRequest.email());
 
