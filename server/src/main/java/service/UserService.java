@@ -103,7 +103,7 @@ public class UserService {
     }
 
     private void validateLogoutRequest(LogoutRequest request) throws BadRequestException {
-        if (request.authToken() == null || request.authToken().isBlank()) {
+        if (request == null || request.authToken() == null || request.authToken().isBlank()) {
             throw new BadRequestException("Error: bad request - one or more fields are missing.");
         }
     }
