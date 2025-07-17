@@ -19,6 +19,9 @@ public class AuthDAO implements IAuthDAO {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
+        if (!authDataMap.containsKey(authToken)) {
+            throw new DataAccessException("Cannot get AuthData, AuthToken: " + authToken + " does not exist.");
+        }
         return authDataMap.get(authToken);
     }
 

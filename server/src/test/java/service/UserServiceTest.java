@@ -11,8 +11,10 @@ import passoff.model.TestUser;
 import passoff.server.TestServerFacade;
 import server.Server;
 import service.request.LoginRequest;
+import service.request.LogoutRequest;
 import service.request.RegisterRequest;
 import service.response.LoginResult;
+import service.response.LogoutResult;
 import service.response.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,6 +91,36 @@ class UserServiceTest {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
             testUserService.login(loginRequest);
         });
+    }
 
+    @Test
+    @DisplayName("Positive Logout")
+    public void normalLogout() throws DataAccessException {
+        RegisterRequest registerRequest = new RegisterRequest("perfectUser", "perfect", "perfect@gmail.com");
+        RegisterResult registerResult = testUserService.register(registerRequest);
+        String authToken = registerResult.authToken();
+
+        LogoutRequest logoutRequest = new LogoutRequest(authToken);
+
+        LogoutResult result = testUserService.logout(logoutRequest);
+        assertNotNull(result);
+        assertThrows(DataAccessException.class, () -> {
+            testAuthDAO.getAuth(authToken);
+        });
+
+    }
+
+    @Test
+    @DisplayName("Negative Logout")
+    public void wrongUserLogout() throws DataAccessException {
+        RegisterRequest registerRequest = new RegisterRequest("perfectUser", "perfect", "perfect@gmail.com");
+        RegisterResult registerResult = testUserService.register(registerRequest);
+        String authToken = registerResult.authToken();
+
+        LogoutRequest logoutRequest = new LogoutRequest("fake");
+
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            testUserService.logout(logoutRequest);
+        });
     }
 }
