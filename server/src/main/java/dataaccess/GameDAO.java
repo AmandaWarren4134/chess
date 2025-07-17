@@ -6,23 +6,28 @@ import chess.ChessGame;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameDAO implements IGameDAO {
     private final Map<Integer, GameData> gameList = new HashMap<>();
 
     /***
-     * Adds a new game with the given parameters to the hashmap
+     * Adds a new game with the given name to the hashmap
      *
-     * @param gameID
-     * @param whiteUsername
-     * @param blackUsername
      * @param gameName
-     * @param game
      */
     @Override
-    public void createGame(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game){
+    public int createGame(String gameName){
+        Random random = new Random();
+        int gameID = random.nextInt();
+        String whiteUsername = "";
+        String blackUsername = "";
+        ChessGame game = new ChessGame();
+
         GameData newGame = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         gameList.put(gameID, newGame);
+
+        return gameID;
     }
 
     /***

@@ -1,11 +1,10 @@
 package service;
 
 import Model.GameData;
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
+import service.request.CreateRequest;
 import service.request.ListRequest;
+import service.response.CreateResult;
 import service.response.ListResult;
 
 import java.util.ArrayList;
@@ -19,11 +18,33 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
+    public CreateResult create(CreateRequest createRequest) throws DataAccessException {
+        // Validate Request
+        validateCreateRequest(createRequest);
+
+        // Check AuthData
+        if (authDAO.getAuth(createRequest.authToken()) == null) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+
+        // Create Game
+        int newGameID = gameDAO.createGame(createRequest.gameName());
+
+        // Return as a CreateResult
+        return new CreateResult(newGameID);
+    }
+
+    private void validateCreateRequest(CreateRequest request) throws DataAccessException {
+        if (request.gameName() == null || request.gameName().isBlank()){
+            throw new BadRequestException("Error: bad request.");
+        }
+    }
+
     public ListResult list(ListRequest listRequest) throws DataAccessException {
         // Validate Request
         validateListRequest(listRequest);
 
-        // Get AuthData
+        // Check AuthData
         if (authDAO.getAuth(listRequest.authToken()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
