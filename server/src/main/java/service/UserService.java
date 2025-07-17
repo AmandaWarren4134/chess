@@ -1,8 +1,11 @@
 package service;
 
+import Model.UserData;
 import dataaccess.*;
 import service.request.RegisterRequest;
 import service.response.RegisterResult;
+import service.response.LoginResult;
+import service.request.LoginRequest;
 
 public class UserService {
 
@@ -41,9 +44,22 @@ public class UserService {
         return new RegisterResult(registerRequest.username(), newAuthToken);
     }
 
-//    public LoginResult login(LoginRequest loginRequest) {
-//
-//    }
+    public void validateLoginRequest(LoginRequest request) throws BadRequestException {
+        // Validate request fields
+        if (request.username() == null || request.password() == null || request.username().isBlank() || request.password().isBlank()){
+            throw new BadRequestException("Error: bad request - one or more fields are missing.");
+        }
+    }
+
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        validateLoginRequest(loginRequest);
+
+        // Get User
+        UserData userData = userDAO.getUser(loginRequest.username());
+        if (userData.password() != loginRequest.password()) {
+            throw InvalidPasswordException
+        }
+    }
 //    public void logout(LogoutRequest logoutRequest) {}
     public void clearUserData() {
         userDAO.clearAllUsers();
