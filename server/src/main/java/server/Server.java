@@ -23,7 +23,7 @@ public class Server {
 
         // Shared Services
         UserService userService = new UserService(userDAO, authDAO);
-        AuthService authService = new AuthService();
+        AuthService authService = new AuthService(authDAO);
         GameService gameService = new GameService(gameDAO, authDAO);
 
         // Register your endpoints and handle exceptions here.
