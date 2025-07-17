@@ -18,19 +18,16 @@ public class AuthDAO implements IAuthDAO {
     }
 
     @Override
-    public AuthData getAuth(String AuthToken) throws DataAccessException {
-        if (authDataMap.get(AuthToken) == null) {
-            throw new DataAccessException("Cannot get AuthData, AuthToken: " + AuthToken + " does not exist.");
-        }
-        return authDataMap.get(AuthToken);
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        return authDataMap.get(authToken);
     }
 
     @Override
-    public void deleteAuth(String AuthToken) throws DataAccessException {
-        if (!authDataMap.containsKey(AuthToken)){
-            throw new DataAccessException("Cannot delete AuthData, AuthToken: " + AuthToken + " does not exist.");
+    public void deleteAuth(String authToken) throws DataAccessException {
+        if (!authDataMap.containsKey(authToken)){
+            throw new DataAccessException("Cannot delete AuthData, AuthToken: " + authToken + " does not exist.");
         }
-        authDataMap.remove(AuthToken);
+        authDataMap.remove(authToken);
     }
     private String createAuthToken() {
         return UUID.randomUUID().toString();

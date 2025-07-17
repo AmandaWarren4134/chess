@@ -10,15 +10,12 @@ import service.response.LoginResult;
 import service.request.LoginRequest;
 
 public class UserService {
-
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
 
-    public UserService() {
-        this.userDAO = new UserDAO();
-        this.authDAO = new AuthDAO();
-        this.gameDAO = new GameDAO();
+    public UserService(UserDAO userDAO, AuthDAO authDAO) {
+        this.userDAO = userDAO;
+        this.authDAO = authDAO;
     }
 
     /***

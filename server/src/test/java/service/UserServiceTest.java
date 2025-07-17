@@ -1,7 +1,9 @@
 package service;
 
+import dataaccess.AuthDAO;
 import dataaccess.BadRequestException;
 import dataaccess.DataAccessException;
+import dataaccess.UserDAO;
 import org.junit.jupiter.api.*;
 import passoff.model.TestAuthResult;
 import passoff.model.TestCreateRequest;
@@ -18,10 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
 
     private UserService testUserService;
+    private UserDAO testUserDAO;
+    private AuthDAO testAuthDAO;
 
     @BeforeEach
     public void setUp() {
-        testUserService = new UserService();
+        testUserDAO = new UserDAO();
+        testAuthDAO = new AuthDAO();
+        testUserService = new UserService(testUserDAO, testAuthDAO);
 
     }
 
