@@ -67,4 +67,8 @@ public class GameDAO implements IGameDAO {
         GameData updatedGameData = gameData.update(username, playerColor, game);
         gameList.put(gameID, updatedGameData);
     }
+
+    public void clearAllGames() {
+        gameList.clear();
+    }
 }

@@ -24,5 +24,7 @@ public class UserDAO implements IUserDAO {
         return userDataMap.get(username);
     }
 
-
+    public void clearAllUsers() {
+        userDataMap.clear();
+    }
 }

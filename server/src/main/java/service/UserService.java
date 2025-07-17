@@ -1,11 +1,9 @@
 package service;
 
+import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import service.request.LoginRequest;
-import service.response.LoginResult;
-import service.request.LogoutRequest;
 import service.request.RegisterRequest;
 import service.response.RegisterResult;
 
@@ -13,10 +11,12 @@ public class UserService {
 
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
 
     public UserService() {
         this.userDAO = new UserDAO();
         this.authDAO = new AuthDAO();
+        this.gameDAO = new GameDAO();
     }
 
     /***
@@ -46,4 +46,7 @@ public class UserService {
 //
 //    }
 //    public void logout(LogoutRequest logoutRequest) {}
+    public void clearUserData() {
+        userDAO.clearAllUsers();
+    }
 }

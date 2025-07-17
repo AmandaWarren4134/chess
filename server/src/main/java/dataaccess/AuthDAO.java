@@ -35,4 +35,8 @@ public class AuthDAO implements IAuthDAO {
     private String createAuthToken() {
         return UUID.randomUUID().toString();
     }
+
+    public void clearAllUsers() {
+        authDataMap.clear();
+    }
 }
