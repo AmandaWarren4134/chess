@@ -53,7 +53,7 @@ public class GameService {
     private boolean colorIsAvailable (GameData game, ChessGame.TeamColor color) {
         if (game.whiteUsername() == null && color == ChessGame.TeamColor.WHITE) {
             return true;
-        } else return game.blackUsername() == null && color == ChessGame.TeamColor.BLACK;
+        } else {return game.blackUsername() == null && color == ChessGame.TeamColor.BLACK;}
     }
 
     private void validateJoinRequest (JoinRequest request) throws DataAccessException {

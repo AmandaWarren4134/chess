@@ -39,7 +39,8 @@ public class UserService {
     }
 
     private void validateRegisterRequest(RegisterRequest registerRequest) throws BadRequestException {
-        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null || registerRequest.username().isBlank() || registerRequest.password().isBlank() || registerRequest.email().isBlank()){
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null
+                || registerRequest.username().isBlank() || registerRequest.password().isBlank() || registerRequest.email().isBlank()){
             throw new BadRequestException("Error: bad request - one or more fields are missing.");
         }
     }
