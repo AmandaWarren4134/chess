@@ -21,15 +21,18 @@ public class ClearHandler implements Route {
         this.gson = new Gson();
     }
 
+    public String clear() {
+        userService.clearUserData();
+        authService.clearAuthData();
+        gameService.clearGameData();
+        return "{}";
+    }
+
     @Override
     public Object handle(Request request, Response response) throws Exception {
         try {
-            userService.clearUserData();
-            authService.clearAuthData();
-            gameService.clearGameData();
-
             response.status(200);
-            return "{}";
+            return clear();
         } catch (Exception e) {
             response.status(500);
             return "Error clearing database: " + e.getMessage();
