@@ -1,10 +1,6 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataaccess.BadRequestException;
-import dataaccess.DataAccessException;
-import dataaccess.InvalidPasswordException;
-import dataaccess.UnauthorizedException;
 import service.UserService;
 import service.request.LoginRequest;
 import service.response.LoginResult;
@@ -34,21 +30,8 @@ public class LoginHandler implements Route {
             response.status(200);
             response.type("application/json");
             return gson.toJson(Map.of("username", result.username(), "authToken", result.authToken()));
-        } catch (BadRequestException e) {
-            response.status(400);
-            response.type("application/json");
-
-            return gson.toJson(Map.of("message", "Error: bad request"));
-        } catch (UnauthorizedException | InvalidPasswordException e ) {
-            response.status(401);
-            response.type("application/json");
-
-            return gson.toJson(Map.of("message", "Error: unauthorized"));
         } catch (Exception e) {
-            response.status(500);
-            response.type("application/json");
-
-            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
+            return ExceptionHelper.handleException(e, response);
         }
     }
 }

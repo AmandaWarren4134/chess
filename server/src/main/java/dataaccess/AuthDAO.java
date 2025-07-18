@@ -1,6 +1,6 @@
 package dataaccess;
 
-import Model.AuthData;
+import model.AuthData;
 
 import java.util.UUID;
 import java.util.Map;

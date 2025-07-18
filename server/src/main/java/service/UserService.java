@@ -1,6 +1,6 @@
 package service;
 
-import Model.UserData;
+import model.UserData;
 import dataaccess.*;
 import service.request.LogoutRequest;
 import service.request.RegisterRequest;

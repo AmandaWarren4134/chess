@@ -1,6 +1,6 @@
 package dataaccess;
 
-import Model.UserData;
+import model.UserData;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -8,9 +8,9 @@ public class UserDAO implements IUserDAO {
     private final Map<String, UserData> userDataMap = new HashMap<>();
 
     @Override
-    public void createUser(String username, String password, String email) throws DataAccessException {
+    public void createUser(String username, String password, String email) throws AlreadyTakenException {
         if (userDataMap.containsKey(username)) {
-            throw new DataAccessException("This username: " + username + " is already taken.");
+            throw new AlreadyTakenException("This username: " + username + " is already taken.");
         }
         UserData userData = new UserData(username, password, email);
         userDataMap.put(username, userData);

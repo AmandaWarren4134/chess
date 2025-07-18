@@ -16,13 +16,13 @@ public class BishopMove {
 
     /* Start moving in a direction, check if it is on the board, if it is blocked by a piece of the same color,
     * or if it is a piece that can be captured */
-    private static void addDirection(int x_distance, int y_distance, ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessMove> moves) {
+    private static void addDirection(int row, int col, ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessMove> moves) {
         int nextRow = myPosition.getRow();
         int nextColumn = myPosition.getColumn();
 
         while (true) {
-            nextRow += x_distance;
-            nextColumn += y_distance;
+            nextRow += row;
+            nextColumn += col;
             ChessPosition nextPosition = new ChessPosition(nextRow, nextColumn);
 
             if (!nextPosition.isOnBoard()) {

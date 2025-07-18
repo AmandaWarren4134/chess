@@ -1,7 +1,7 @@
 package service;
 
-import Model.AuthData;
-import Model.GameData;
+import model.AuthData;
+import model.GameData;
 import chess.ChessGame;
 import dataaccess.*;
 import service.request.CreateRequest;
