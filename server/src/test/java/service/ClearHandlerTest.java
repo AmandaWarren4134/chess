@@ -1,21 +1,16 @@
-package server.handler;
+package service;
 
-import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import org.junit.jupiter.api.Test;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
+import server.handler.ClearHandler;
 import service.request.CreateRequest;
 import service.request.ListRequest;
 import service.request.RegisterRequest;
 import service.response.ListResult;
 import service.response.RegisterResult;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
