@@ -26,7 +26,7 @@ public class Server {
         AuthService authService = new AuthService(authDAO);
         GameService gameService = new GameService(gameDAO, authDAO);
 
-        // Register your endpoints and handle exceptions here.
+        // Create Endpoint Handlers
         RegisterHandler registerHandler = new RegisterHandler(userService);
         ClearHandler clearHandler = new ClearHandler(userService, gameService, authService);
         LoginHandler loginHandler = new LoginHandler(userService);
@@ -35,6 +35,7 @@ public class Server {
         CreateHandler createHandler = new CreateHandler(gameService);
         JoinHandler joinHandler = new JoinHandler(gameService);
 
+        // Registering Endpoints to receive HTTP requests
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
         Spark.delete("/session", logoutHandler);
