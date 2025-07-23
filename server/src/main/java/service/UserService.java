@@ -13,6 +13,8 @@ import service.response.RegisterResult;
 import service.response.LoginResult;
 import service.request.LoginRequest;
 
+import javax.xml.crypto.Data;
+
 public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
@@ -110,7 +112,7 @@ public class UserService {
         }
     }
 
-    public void clearUserData() {
+    public void clearUserData() throws DataAccessException {
         userDAO.clearAllUsers();
     }
 }

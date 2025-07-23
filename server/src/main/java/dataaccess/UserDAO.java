@@ -27,7 +27,10 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public void clearAllUsers() {
+    public void clearAllUsers() throws DataAccessException {
         userDataMap.clear();
+        if (!userDataMap.isEmpty()) {
+            throw new DataAccessException("Failed to clear user data.");
+        }
     }
 }

@@ -89,9 +89,9 @@ public class DatabaseManager {
             // auth table
             """
         CREATE TABLE IF NOT EXISTS auth (
-            auth_token VARCHAR(100) PRIMARY KEY,
+            authToken VARCHAR(100) PRIMARY KEY,
             username VARCHAR(100) NOT NULL,
-            FOREIGN KEY (username) REFERENCES users(username)
+            FOREIGN KEY (username) REFERENCES user(username)
         )
         """,
             // game table
@@ -102,8 +102,8 @@ public class DatabaseManager {
             blackUsername VARCHAR(100),
             gameName VARCHAR(100) NOT NULL,
             gameState JSON,
-            FOREIGN KEY (whiteUsername) REFERENCES users(username),
-            FOREIGN KEY (blackUsername) REFERENCES users(username)
+            FOREIGN KEY (whiteUsername) REFERENCES user(username),
+            FOREIGN KEY (blackUsername) REFERENCES user(username)
         )
         """
     };

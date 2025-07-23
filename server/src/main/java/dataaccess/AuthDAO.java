@@ -34,6 +34,7 @@ public class AuthDAO implements IAuthDAO {
         }
         authDataMap.remove(authToken);
     }
+
     private String createAuthToken() {
         return UUID.randomUUID().toString();
     }

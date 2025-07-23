@@ -81,14 +81,14 @@ public class MySqlUser implements IUserDAO {
     }
 
     @Override
-    public void clearAllUsers() {
+    public void clearAllUsers() throws DataAccessException {
         String statement = "DELETE FROM user";
 
         try (Connection conn = DatabaseManager.getConnection();
         PreparedStatement ps = conn.prepareStatement(statement)) {
             ps.executeUpdate();
         } catch (SQLException | DataAccessException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Failed to clear users", e);
         }
     }
 
