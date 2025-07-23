@@ -1,6 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
+import dataaccess.exceptions.DataAccessException;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -21,7 +22,7 @@ public class ClearHandler implements Route {
         this.gson = new Gson();
     }
 
-    public String clear() {
+    public String clear() throws DataAccessException {
         userService.clearUserData();
         authService.clearAuthData();
         gameService.clearGameData();

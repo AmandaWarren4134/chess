@@ -38,7 +38,11 @@ public class AuthDAO implements IAuthDAO {
         return UUID.randomUUID().toString();
     }
 
-    public void clearAllAuthTokens() {
+    @Override
+    public void clearAllAuthTokens() throws DataAccessException {
         authDataMap.clear();
+        if (!authDataMap.isEmpty()) {
+            throw new DataAccessException("Failed to clear auth data map.");
+        }
     }
 }

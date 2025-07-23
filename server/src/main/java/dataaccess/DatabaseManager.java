@@ -100,7 +100,7 @@ public class DatabaseManager {
             gameID INT PRIMARY KEY AUTO_INCREMENT,
             whiteUsername VARCHAR(100),
             blackUsername VARCHAR(100),
-            gameName VARCHAR(100),
+            gameName VARCHAR(100) NOT NULL,
             gameState JSON,
             FOREIGN KEY (whiteUsername) REFERENCES users(username),
             FOREIGN KEY (blackUsername) REFERENCES users(username)

@@ -13,11 +13,15 @@ public class MySqlGame implements IGameDAO {
 
     @Override
     public int createGame(String gameName) throws DataAccessException {
+        if (gameName == null || gameName.isBlank()) {
+            throw new DataAccessException("Game name cannot be empty or null.");
+        }
+
         ChessGame game = new ChessGame();
         String gameJson = gson.toJson(game);
 
         try (Connection conn = DatabaseManager.getConnection()) {
-            String statement = "INSERT INTO game (name, gameState) VALUES (?,?)";
+            String statement = "INSERT INTO game (gameName, gameState) VALUES (?,?)";
             try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
 
                 ps.setString(1, gameName);
@@ -40,7 +44,7 @@ public class MySqlGame implements IGameDAO {
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT whiteUsername, blackUsername, gameName, gameState FROM game WHERE gameID = ?";
+            String statement = "SELECT gameID, whiteUsername, blackUsername, gameName, gameState FROM game WHERE gameID = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
