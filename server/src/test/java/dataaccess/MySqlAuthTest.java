@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import model.AuthData;
 import dataaccess.MySqlAuth;
+import dataaccess.MySqlGame;
 import dataaccess.exceptions.DataAccessException;
 import org.junit.jupiter.api.*;
 
@@ -15,25 +16,24 @@ class MySqlAuthTest {
 
     private static MySqlAuth authDao;
     private static MySqlUser userDao;
+    private static MySqlGame gameDao;
 
     @BeforeAll
     static void setup() throws DataAccessException {
         authDao = new MySqlAuth();
         userDao = new MySqlUser();
+        gameDao = new MySqlGame();
     }
 
     @BeforeEach
     void ClearDatabaseBeforeEach() throws DataAccessException {
         authDao.clearAllAuthTokens();
+
+        gameDao.clearAllGames();
+
         userDao.clearAllUsers();
 
-        // Create a valid user
-        String username = "firstUser";
-        String password = "MyPassword123!!!";
-        String email = "firstUser@gmail.com";
-
-        // Create a user
-        userDao.createUser(username, password, email);
+        userDao.createUser("firstUser", "MyPassword123!!!", "firstUser@gmail.com");
     }
 
     @AfterEach

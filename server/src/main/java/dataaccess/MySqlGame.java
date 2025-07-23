@@ -97,11 +97,14 @@ public class MySqlGame implements IGameDAO {
     public void updateGame(int gameID, GameData gameData) throws DataAccessException {
 
         try(var conn = DatabaseManager.getConnection()) {
-            var statement = "UPDATE game SET gameState = ? WHERE gameID = ?";
+            var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ?, gameState = ? WHERE gameID = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 String gameJson = gson.toJson(gameData.game());
-                ps.setString(1, gameJson);
-                ps.setInt(2, gameID);
+                ps.setString(1, gameData.whiteUsername());
+                ps.setString(2, gameData.blackUsername());
+                ps.setString(3, gameData.gameName());
+                ps.setString(4, gameJson);
+                ps.setInt(5, gameID);
 
                 int rowsAffected = ps.executeUpdate();
 

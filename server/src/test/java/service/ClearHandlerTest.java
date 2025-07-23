@@ -4,6 +4,9 @@ import dataaccess.AuthDAO;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import dataaccess.MySqlAuth;
+import dataaccess.MySqlGame;
+import dataaccess.MySqlUser;
 import org.junit.jupiter.api.Test;
 import server.handler.ClearHandler;
 import service.request.CreateRequest;
@@ -19,16 +22,16 @@ class ClearHandlerTest {
     private UserService testUserService;
     private AuthService testAuthService;
     private GameService testGameService;
-    private UserDAO testUserDAO;
-    private AuthDAO testAuthDAO;
-    private GameDAO testGameDAO;
+    private MySqlUser testUserDAO;
+    private MySqlAuth testAuthDAO;
+    private MySqlGame testGameDAO;
 
     @Test
     void handle() throws DataAccessException {
         // Set up
-        testUserDAO = new UserDAO();
-        testAuthDAO = new AuthDAO();
-        testGameDAO = new GameDAO();
+        testUserDAO = new MySqlUser();
+        testAuthDAO = new MySqlAuth();
+        testGameDAO = new MySqlGame();
         testUserService = new UserService(testUserDAO, testAuthDAO);
         testAuthService = new AuthService(testAuthDAO);
         testGameService = new GameService(testGameDAO, testAuthDAO);
@@ -56,9 +59,7 @@ class ClearHandlerTest {
         assertEquals("{}", result);
 
         // Assertions
-        assertThrows(DataAccessException.class, () -> {
-            testAuthDAO.getAuth(authToken);
-        });
+        assertNull(testAuthDAO.getAuth(authToken));
 
         // Re-register to test games list
         RegisterResult newRegister = testUserService.register(registerRequest);

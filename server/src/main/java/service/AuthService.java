@@ -1,12 +1,13 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.MySqlAuth;
 import dataaccess.exceptions.DataAccessException;
 
 public class AuthService {
-        private final AuthDAO authDAO;
+        private final MySqlAuth authDAO;
 
-        public AuthService(AuthDAO authDAO) {
+        public AuthService(MySqlAuth authDAO) {
             this.authDAO = authDAO;
         }
 

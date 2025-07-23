@@ -15,10 +15,6 @@ import static java.sql.Types.NULL;
 
 public class MySqlUser implements IUserDAO {
 
-    public MySqlUser() throws DataAccessException {
-        DatabaseManager.configureDatabase();
-    }
-
     @Override
     public void createUser(String username, String password, String email) throws AlreadyTakenException {
         String hashedPassword = hashPassword(password);
@@ -88,6 +84,7 @@ public class MySqlUser implements IUserDAO {
         PreparedStatement ps = conn.prepareStatement(statement)) {
             ps.executeUpdate();
         } catch (SQLException | DataAccessException e) {
+            e.printStackTrace();
             throw new DataAccessException("Failed to clear users", e);
         }
     }

@@ -1,5 +1,7 @@
 package service;
 
+import dataaccess.MySqlUser;
+import dataaccess.MySqlAuth;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.InvalidPasswordException;
@@ -12,14 +14,15 @@ import service.response.LogoutResult;
 import service.response.RegisterResult;
 import service.response.LoginResult;
 import service.request.LoginRequest;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.xml.crypto.Data;
 
 public class UserService {
-    private final UserDAO userDAO;
-    private final AuthDAO authDAO;
+    private final MySqlUser userDAO;
+    private final MySqlAuth authDAO;
 
-    public UserService(UserDAO userDAO, AuthDAO authDAO) {
+    public UserService(MySqlUser userDAO, MySqlAuth authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }
@@ -63,10 +66,9 @@ public class UserService {
         validateLoginRequest(loginRequest);
 
         // Get User
-        UserData userData;
-        try {
-            userData = userDAO.getUser(loginRequest.username());
-        } catch (DataAccessException ex) {
+        UserData userData = userDAO.getUser(loginRequest.username());
+
+        if (userData == null) {
             throw new UnauthorizedException("Error: username does not exist.");
         }
 
@@ -87,7 +89,7 @@ public class UserService {
     }
 
     private void validatePassword(UserData userData, LoginRequest request) throws InvalidPasswordException {
-        if (!userData.password().equals(request.password())) {
+        if (!BCrypt.checkpw(request.password(), userData.password())) {
             throw new InvalidPasswordException("Error: unauthorized");
         }
     }

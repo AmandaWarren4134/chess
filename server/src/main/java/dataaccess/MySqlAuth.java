@@ -15,15 +15,22 @@ public class MySqlAuth implements IAuthDAO {
             throw new DataAccessException("Username may not be empty or null.");
         }
 
+        if (!userExists(username)) {
+            throw new DataAccessException("Error: User does not exist.");
+        }
+
         try (Connection conn = DatabaseManager.getConnection()) {
+            System.out.println("Creating auth token for username: " + username);  // Debugging log
             String statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
             newAuthToken = createAuthToken();
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, newAuthToken);
                 ps.setString(2, username);
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+                System.out.println("Rows affected: " + rowsAffected);  // Debugging log
             }
         } catch (SQLException e) {
+            System.out.println("Error creating auth token for username: " + username);  // Debugging log
             throw new DataAccessException("Error creating authToken.", e);
         }
         return newAuthToken;
@@ -31,6 +38,23 @@ public class MySqlAuth implements IAuthDAO {
 
     private String createAuthToken() {
         return UUID.randomUUID().toString();
+    }
+
+    private boolean userExists(String username) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "SELECT COUNT(*) FROM user WHERE username = ?";
+            try (var ps = conn.prepareStatement(query)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1) > 0;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking user existence.", e);
+        }
+        return false;
     }
 
     @Override

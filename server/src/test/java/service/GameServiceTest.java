@@ -5,9 +5,7 @@ import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.request.CreateRequest;
 import service.request.JoinRequest;
 import service.request.ListRequest;
@@ -22,19 +20,39 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameServiceTest {
     private UserService testUserService;
     private GameService testGameService;
-    private UserDAO testUserDAO;
-    private GameDAO testGameDAO;
-    private AuthDAO testAuthDAO;
+    private static MySqlUser testUserDAO;
+    private static MySqlGame testGameDAO;
+    private static MySqlAuth testAuthDAO;
     private final Gson gson = new Gson();
 
+    @BeforeAll
+    static void setup() {
+        testUserDAO = new MySqlUser();
+        testGameDAO = new MySqlGame();
+        testAuthDAO = new MySqlAuth();
+    }
 
     @BeforeEach
-    public void setUp() {
-        testUserDAO = new UserDAO();
-        testGameDAO = new GameDAO();
-        testAuthDAO = new AuthDAO();
+    public void clearDatabaseBeforeEach() {
+        // Initialize the services with the DAOs
         testUserService = new UserService(testUserDAO, testAuthDAO);
         testGameService = new GameService(testGameDAO, testAuthDAO);
+
+        // Clear the database before each test (ensure methods are present in your DAOs)
+        try {
+            testGameDAO.clearAllGames();
+            testUserDAO.clearAllUsers();
+            testAuthDAO.clearAllAuthTokens();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterEach
+    public void clearDatabaseAfterEach() throws DataAccessException {
+        testGameDAO.clearAllGames();
+        testUserDAO.clearAllUsers();
+        testAuthDAO.clearAllAuthTokens();
     }
 
     @Test

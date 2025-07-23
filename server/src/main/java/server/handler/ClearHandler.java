@@ -9,6 +9,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Map;
+
 public class ClearHandler implements Route {
     private final UserService userService;
     private final AuthService authService;
@@ -23,9 +25,10 @@ public class ClearHandler implements Route {
     }
 
     public String clear() throws DataAccessException {
-        userService.clearUserData();
-        authService.clearAuthData();
         gameService.clearGameData();
+        authService.clearAuthData();
+        userService.clearUserData();
+
         return "{}";
     }
 
@@ -36,7 +39,7 @@ public class ClearHandler implements Route {
             return clear();
         } catch (Exception e) {
             response.status(500);
-            return "Error clearing database: " + e.getMessage();
+            return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
         }
     }
 }

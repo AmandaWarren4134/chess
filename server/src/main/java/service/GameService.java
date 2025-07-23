@@ -1,5 +1,7 @@
 package service;
 
+import dataaccess.MySqlGame;
+import dataaccess.MySqlAuth;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
@@ -18,10 +20,10 @@ import service.response.ListResult;
 import java.util.ArrayList;
 
 public class GameService {
-    private final GameDAO gameDAO;
-    private final AuthDAO authDAO;
+    private final MySqlGame gameDAO;
+    private final MySqlAuth authDAO;
 
-    public GameService (GameDAO gameDAO, AuthDAO authDAO) {
+    public GameService (MySqlGame gameDAO, MySqlAuth authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }

@@ -3,6 +3,9 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.UserDAO;
+import dataaccess.MySqlAuth;
+import dataaccess.MySqlGame;
+import dataaccess.MySqlUser;
 import org.junit.jupiter.api.*;
 import service.request.LoginRequest;
 import service.request.LogoutRequest;
@@ -16,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
 
     private UserService testUserService;
-    private UserDAO testUserDAO;
-    private AuthDAO testAuthDAO;
+    private MySqlUser testUserDAO;
+    private MySqlAuth testAuthDAO;
 
     @BeforeEach
     public void setUp() {
-        testUserDAO = new UserDAO();
-        testAuthDAO = new AuthDAO();
+        testUserDAO = new MySqlUser();
+        testAuthDAO = new MySqlAuth();
         testUserService = new UserService(testUserDAO, testAuthDAO);
 
     }
