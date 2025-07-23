@@ -60,19 +60,6 @@ public class MySqlAuth implements IAuthDAO {
         return false;
     }
 
-    private String getAuthTokenByUsername(String username, Connection conn) throws SQLException {
-        String statement = "SELECT authToken FROM auth WHERE username=?";
-        try(var ps = conn.prepareStatement(statement)) {
-            ps.setString(1, username);
-            try(var rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("authToken");
-                }
-            }
-        }
-        return null;
-    }
-
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
        try (var conn = DatabaseManager.getConnection()) {

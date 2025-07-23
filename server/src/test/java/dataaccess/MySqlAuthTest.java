@@ -26,7 +26,7 @@ class MySqlAuthTest {
     }
 
     @BeforeEach
-    void ClearDatabaseBeforeEach() throws DataAccessException {
+    void clearDatabaseBeforeEach() throws DataAccessException {
         authDao.clearAllAuthTokens();
 
         gameDao.clearAllGames();
