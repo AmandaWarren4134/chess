@@ -116,7 +116,7 @@ public class GameService {
         }
     }
 
-    public void clearGameData () {
+    public void clearGameData () throws DataAccessException {
         gameDAO.clearAllGames();
     }
 }

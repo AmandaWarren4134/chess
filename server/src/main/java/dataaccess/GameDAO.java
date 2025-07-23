@@ -18,7 +18,7 @@ public class GameDAO implements IGameDAO {
      * @param gameName
      */
     @Override
-    public int createGame(String gameName){
+    public int createGame(String gameName) throws DataAccessException{
         Random random = new Random();
         int gameID = random.nextInt(Integer.MAX_VALUE) + 1;
         ChessGame game = new ChessGame();
@@ -50,7 +50,7 @@ public class GameDAO implements IGameDAO {
      * @return
      */
     @Override
-    public ArrayList<GameData> listGames() {
+    public ArrayList<GameData> listGames() throws DataAccessException {
         return new ArrayList<>(gameList.values());
     }
 
@@ -69,7 +69,11 @@ public class GameDAO implements IGameDAO {
         gameList.put(gameID, game);
     }
 
-    public void clearAllGames() {
+    @Override
+    public void clearAllGames()throws DataAccessException  {
         gameList.clear();
+        if (! gameList.isEmpty()) {
+            throw new DataAccessException("Failed to clear games.");
+        }
     }
 }

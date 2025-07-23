@@ -82,15 +82,15 @@ public class DatabaseManager {
             """
         CREATE TABLE IF NOT EXISTS user (
             username VARCHAR(100) PRIMARY KEY,
-            password VARCHAR(100),
-            email VARCHAR(100)
+            password VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL
         )
         """,
             // auth table
             """
         CREATE TABLE IF NOT EXISTS auth (
             auth_token VARCHAR(100) PRIMARY KEY,
-            username VARCHAR(100),
+            username VARCHAR(100) NOT NULL,
             FOREIGN KEY (username) REFERENCES users(username)
         )
         """,

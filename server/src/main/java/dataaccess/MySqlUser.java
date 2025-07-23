@@ -38,11 +38,11 @@ public class MySqlUser implements IUserDAO {
 
             // Insert User
             String insertUserSQL = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-            try (PreparedStatement stmt = conn.prepareStatement(insertUserSQL)) {
-                stmt.setString(1, username);
-                stmt.setString(2, hashedPassword);
-                stmt.setString(3, email);
-                stmt.executeUpdate();
+            try (var ps = conn.prepareStatement(insertUserSQL)) {
+                ps.setString(1, username);
+                ps.setString(2, hashedPassword);
+                ps.setString(3, email);
+                ps.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
             throw new AlreadyTakenException("Failed to create user", e);
