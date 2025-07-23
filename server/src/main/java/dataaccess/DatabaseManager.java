@@ -50,6 +50,7 @@ public class DatabaseManager {
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
+            System.err.println("Database connection failed: " + ex.getMessage());
             throw new DataAccessException("failed to get connection", ex);
         }
     }

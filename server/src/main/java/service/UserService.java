@@ -102,7 +102,12 @@ public class UserService {
         try {
             authDAO.deleteAuth(logoutRequest.authToken());
         } catch (DataAccessException ex) {
-            throw new UnauthorizedException("Error: authToken does not exist.");
+            if (ex.getMessage().contains("failed to get connection")) {
+                throw new DataAccessException("Error: Unable to connect to the database.");
+            }
+            else {
+                throw new UnauthorizedException("Error: authToken does not exist.");
+            }
         }
 
         return new LogoutResult();

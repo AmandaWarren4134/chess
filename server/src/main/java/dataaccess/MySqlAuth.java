@@ -21,8 +21,20 @@ public class MySqlAuth implements IAuthDAO {
 
         try (Connection conn = DatabaseManager.getConnection()) {
             System.out.println("Creating auth token for username: " + username);  // Debugging log
-            String statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
+
+            // Check if they already have an authToken
+            newAuthToken = getAuthTokenByUsername(username, conn);
+
+            if (newAuthToken != null) {
+                // If an auth token exists, return the existing one
+                System.out.println("User already has an existing auth token: " + newAuthToken);
+                return newAuthToken;
+            }
+
+            // Create new authToken if there is none
             newAuthToken = createAuthToken();
+
+            String statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, newAuthToken);
                 ps.setString(2, username);
@@ -31,6 +43,7 @@ public class MySqlAuth implements IAuthDAO {
             }
         } catch (SQLException e) {
             System.out.println("Error creating auth token for username: " + username);  // Debugging log
+            e.printStackTrace();
             throw new DataAccessException("Error creating authToken.", e);
         }
         return newAuthToken;
@@ -42,8 +55,8 @@ public class MySqlAuth implements IAuthDAO {
 
     private boolean userExists(String username) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String query = "SELECT COUNT(*) FROM user WHERE username = ?";
-            try (var ps = conn.prepareStatement(query)) {
+            String statement = "SELECT COUNT(*) FROM user WHERE username = ?";
+            try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -55,6 +68,19 @@ public class MySqlAuth implements IAuthDAO {
             throw new DataAccessException("Error checking user existence.", e);
         }
         return false;
+    }
+
+    private String getAuthTokenByUsername(String username, Connection conn) throws SQLException {
+        String statement = "SELECT authToken FROM auth WHERE username=?";
+        try(var ps = conn.prepareStatement(statement)) {
+            ps.setString(1, username);
+            try(var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("authToken");
+                }
+            }
+        }
+        return null;
     }
 
     @Override

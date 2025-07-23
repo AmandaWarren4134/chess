@@ -16,11 +16,10 @@ import static java.sql.Types.NULL;
 public class MySqlUser implements IUserDAO {
 
     @Override
-    public void createUser(String username, String password, String email) throws AlreadyTakenException {
+    public void createUser(String username, String password, String email) throws DataAccessException {
         String hashedPassword = hashPassword(password);
 
         try (Connection conn = DatabaseManager.getConnection()) {
-
             // Check if username is taken
             String checkForUsername = "SELECT username FROM user WHERE username = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkForUsername)) {
@@ -41,7 +40,7 @@ public class MySqlUser implements IUserDAO {
                 ps.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            throw new AlreadyTakenException("Failed to create user", e);
+            throw new DataAccessException ("Failed to create user", e);
         }
     }
 

@@ -1,12 +1,11 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.BadRequestException;
-import dataaccess.exceptions.InvalidPasswordException;
-import dataaccess.exceptions.UnauthorizedException;
+import dataaccess.exceptions.*;
 import spark.Response;
 
+import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.util.Map;
 
 public class ExceptionHelper {
@@ -24,7 +23,11 @@ public class ExceptionHelper {
         } else if (e instanceof AlreadyTakenException) {
             response.status(403);
             return gson.toJson(Map.of("message", "Error: already taken."));
-        } else {
+        } else if (e instanceof DataAccessException || e instanceof SQLException) {
+            response.status(500);
+            return gson.toJson(Map.of("message", "Error: database connection failed"));
+        }
+        else {
             response.status(500);
             return gson.toJson(Map.of("message", "Error: " + e.getMessage()));
         }
