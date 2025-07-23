@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.exceptions.DataAccessException;
+
 import java.sql.*;
 import java.util.Properties;
 
@@ -74,4 +76,49 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    private static final String[] createStatements = {
+            // user table
+            """
+        CREATE TABLE IF NOT EXISTS user (
+            username VARCHAR(100) PRIMARY KEY,
+            password VARCHAR(100),
+            email VARCHAR(100)
+        )
+        """,
+            // auth table
+            """
+        CREATE TABLE IF NOT EXISTS auth (
+            auth_token VARCHAR(100) PRIMARY KEY,
+            username VARCHAR(100),
+            FOREIGN KEY (username) REFERENCES users(username)
+        )
+        """,
+            // game table
+            """
+        CREATE TABLE IF NOT EXISTS game (
+            gameID INT PRIMARY KEY AUTO_INCREMENT,
+            whiteUsername VARCHAR(100),
+            blackUsername VARCHAR(100),
+            gameName VARCHAR(100),
+            gameState JSON,
+            FOREIGN KEY (whiteUsername) REFERENCES users(username),
+            FOREIGN KEY (blackUsername) REFERENCES users(username)
+        )
+        """
+    };
+
+    public static void configureDatabase() throws DataAccessException {
+        createDatabase();
+        try (Connection conn = getConnection()) {
+            for (String stmt : createStatements) {
+                try (PreparedStatement ps = conn.prepareStatement(stmt)) {
+                    ps.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Unable to configure database", ex);
+        }
+    }
+
 }

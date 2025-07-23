@@ -3,6 +3,8 @@ package service;
 import com.google.gson.Gson;
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.DataAccessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

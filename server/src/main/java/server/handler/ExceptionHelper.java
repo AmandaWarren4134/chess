@@ -1,7 +1,10 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataaccess.*;
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.BadRequestException;
+import dataaccess.exceptions.InvalidPasswordException;
+import dataaccess.exceptions.UnauthorizedException;
 import spark.Response;
 
 import java.util.Map;

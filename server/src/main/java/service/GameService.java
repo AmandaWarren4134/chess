@@ -1,5 +1,9 @@
 package service;
 
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.BadRequestException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 import chess.ChessGame;

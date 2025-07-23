@@ -1,5 +1,9 @@
 package service;
 
+import dataaccess.exceptions.BadRequestException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.InvalidPasswordException;
+import dataaccess.exceptions.UnauthorizedException;
 import model.UserData;
 import dataaccess.*;
 import service.request.LogoutRequest;

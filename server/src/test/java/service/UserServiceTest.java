@@ -1,15 +1,9 @@
 package service;
 
 import dataaccess.AuthDAO;
-import dataaccess.BadRequestException;
-import dataaccess.DataAccessException;
+import dataaccess.exceptions.DataAccessException;
 import dataaccess.UserDAO;
 import org.junit.jupiter.api.*;
-import passoff.model.TestAuthResult;
-import passoff.model.TestCreateRequest;
-import passoff.model.TestUser;
-import passoff.server.TestServerFacade;
-import server.Server;
 import service.request.LoginRequest;
 import service.request.LogoutRequest;
 import service.request.RegisterRequest;

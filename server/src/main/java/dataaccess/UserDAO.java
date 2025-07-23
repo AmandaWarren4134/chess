@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.DataAccessException;
 import model.UserData;
 import java.util.Map;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ public class UserDAO implements IUserDAO {
         return userDataMap.get(username);
     }
 
+    @Override
     public void clearAllUsers() {
         userDataMap.clear();
     }
