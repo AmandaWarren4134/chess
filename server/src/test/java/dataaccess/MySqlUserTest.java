@@ -107,6 +107,7 @@ class MySqlUserTest {
     }
 
     @Test
+    @DisplayName("Clear all users")
     void clearAllUsers() throws Exception {
         // Put users in the database
         userDao.createUser("Bella", "forks", "bellaswan@gmail.com");

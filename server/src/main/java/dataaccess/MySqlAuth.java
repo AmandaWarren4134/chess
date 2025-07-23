@@ -10,10 +10,14 @@ import java.sql.*;
 public class MySqlAuth implements IAuthDAO {
     @Override
     public String createAuth(String username) throws DataAccessException {
-        String newAuthToken = createAuthToken();
+        String newAuthToken = null;
+        if (username == null || username.isBlank()) {
+            throw new DataAccessException("Username may not be empty or null.");
+        }
 
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
+            newAuthToken = createAuthToken();
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, newAuthToken);
                 ps.setString(2, username);
