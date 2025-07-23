@@ -121,5 +121,4 @@ public class DatabaseManager {
             throw new DataAccessException("Unable to configure database", ex);
         }
     }
-
 }

@@ -1,9 +1,7 @@
 package server;
 
-import dataaccess.UserDAO;
-import dataaccess.MySqlAuth;
-import dataaccess.MySqlGame;
-import dataaccess.MySqlUser;
+import dataaccess.*;
+import dataaccess.exceptions.DataAccessException;
 import server.handler.*;
 import service.AuthService;
 import service.GameService;
@@ -16,6 +14,15 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        // Create and Configure Database
+
+        try { DatabaseManager.configureDatabase();
+        } catch (DataAccessException e) {
+            // Swap to using memory DAOs ???
+            System.out.print("Error: Cannot configure database");
+        }
+
 
         // Shared DAOs
         MySqlAuth authDAO = new MySqlAuth();
