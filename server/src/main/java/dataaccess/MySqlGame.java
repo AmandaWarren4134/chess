@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class MySqlGame implements IGameDAO {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     @Override
     public int createGame(String gameName) throws DataAccessException {
@@ -18,7 +18,7 @@ public class MySqlGame implements IGameDAO {
         }
 
         ChessGame game = new ChessGame();
-        String gameJson = gson.toJson(game);
+        String gameJson = GSON.toJson(game);
 
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO game (gameName, gameState) VALUES (?,?)";
@@ -68,7 +68,7 @@ public class MySqlGame implements IGameDAO {
         String gameName = rs.getString("gameName");
         String gameStateJson = rs.getString("gameState");
 
-        ChessGame game = gson.fromJson(gameStateJson, ChessGame.class);
+        ChessGame game = GSON.fromJson(gameStateJson, ChessGame.class);
 
         return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
@@ -99,7 +99,7 @@ public class MySqlGame implements IGameDAO {
         try(var conn = DatabaseManager.getConnection()) {
             var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ?, gameState = ? WHERE gameID = ?";
             try (var ps = conn.prepareStatement(statement)) {
-                String gameJson = gson.toJson(gameData.game());
+                String gameJson = GSON.toJson(gameData.game());
                 ps.setString(1, gameData.whiteUsername());
                 ps.setString(2, gameData.blackUsername());
                 ps.setString(3, gameData.gameName());

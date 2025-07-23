@@ -64,13 +64,16 @@ public class GameService {
 
     private void validateJoinRequest (JoinRequest request) throws DataAccessException {
         if (request.playerColor() == null || request.authToken() == null || request.authToken().isBlank()){
-            throw new BadRequestException("Error: bad request.");
+            throw new BadRequestException("Error: Bad request.");
         }
 
         try {
             gameDAO.getGame(request.gameID());
         } catch (DataAccessException ex) {
-            throw new BadRequestException("Error: game does not exist.");
+            if (ex.getMessage().contains("failed to get connection")) {
+                throw new DataAccessException("Error: Unable to connect to the database.");
+            }
+            throw new BadRequestException("Error: Game does not exist.");
         }
     }
 

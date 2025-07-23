@@ -41,8 +41,8 @@ class GameServiceTest {
         // Clear the database before each test (ensure methods are present in your DAOs)
         try {
             testGameDAO.clearAllGames();
-            testUserDAO.clearAllUsers();
             testAuthDAO.clearAllAuthTokens();
+            testUserDAO.clearAllUsers();
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -51,8 +51,8 @@ class GameServiceTest {
     @AfterEach
     public void clearDatabaseAfterEach() throws DataAccessException {
         testGameDAO.clearAllGames();
-        testUserDAO.clearAllUsers();
         testAuthDAO.clearAllAuthTokens();
+        testUserDAO.clearAllUsers();
     }
 
     @Test

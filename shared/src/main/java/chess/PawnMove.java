@@ -80,18 +80,28 @@ public class PawnMove {
     }
 
     private static boolean isEnPassantPossible(ChessPiece piece, ChessPosition myPosition, ChessMove lastMove, ChessPiece lastMovedPiece) {
-        if (lastMovedPiece == null) return false;
-        if (lastMovedPiece.getPieceType() != ChessPiece.PieceType.PAWN) return false;
-        if (lastMovedPiece.getTeamColor() == piece.getTeamColor()) return false;
+        if (lastMovedPiece == null) {
+            return false;
+        }
+        if (lastMovedPiece.getPieceType() != ChessPiece.PieceType.PAWN) {
+            return false;
+        }
+        if (lastMovedPiece.getTeamColor() == piece.getTeamColor()) {
+            return false;
+        }
 
         int lastStartRow = lastMove.getStartPosition().getRow();
         int lastEndRow = lastMove.getEndPosition().getRow();
         int lastEndCol = lastMove.getEndPosition().getColumn();
 
-        if (Math.abs(lastEndRow - lastStartRow) != 2) return false;
+        if (Math.abs(lastEndRow - lastStartRow) != 2) {
+            return false;
+        }
 
         int enPassantRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 5 : 4;
-        if (myPosition.getRow() != enPassantRow) return false;
+        if (myPosition.getRow() != enPassantRow) {
+            return false;
+        }
 
         return Math.abs(lastEndCol - myPosition.getColumn()) == 1;
     }

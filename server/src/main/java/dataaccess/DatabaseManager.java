@@ -78,7 +78,7 @@ public class DatabaseManager {
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
 
-    private static final String[] createStatements = {
+    private static final String[] CREATE_STATEMENTS = {
             // user table
             """
         CREATE TABLE IF NOT EXISTS user (
@@ -90,7 +90,7 @@ public class DatabaseManager {
             // auth table
             """
         CREATE TABLE IF NOT EXISTS auth (
-            authToken VARCHAR(100) PRIMARY KEY,
+            authToken VARCHAR(100),
             username VARCHAR(100) NOT NULL,
             FOREIGN KEY (username) REFERENCES user(username)
         )
@@ -112,7 +112,7 @@ public class DatabaseManager {
     public static void configureDatabase() throws DataAccessException {
         createDatabase();
         try (Connection conn = getConnection()) {
-            for (String stmt : createStatements) {
+            for (String stmt : CREATE_STATEMENTS) {
                 try (PreparedStatement ps = conn.prepareStatement(stmt)) {
                     ps.executeUpdate();
                 }

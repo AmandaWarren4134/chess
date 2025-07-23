@@ -39,8 +39,9 @@ public class MySqlUser implements IUserDAO {
                 ps.setString(3, email);
                 ps.executeUpdate();
             }
-        } catch (SQLException | DataAccessException e) {
-            throw new DataAccessException ("Failed to create user", e);
+        } catch (SQLException e) {
+            System.out.print(e.getMessage());
+            throw new DataAccessException("Failed to create user", e);
         }
     }
 
@@ -61,7 +62,7 @@ public class MySqlUser implements IUserDAO {
                     }
                 }
             }
-        } catch (SQLException | DataAccessException e) {
+        } catch (SQLException e) {
             throw new DataAccessException ("Failed to retrieve user", e);
         }
         return null; // user not found
@@ -82,7 +83,7 @@ public class MySqlUser implements IUserDAO {
         try (Connection conn = DatabaseManager.getConnection();
         PreparedStatement ps = conn.prepareStatement(statement)) {
             ps.executeUpdate();
-        } catch (SQLException | DataAccessException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new DataAccessException("Failed to clear users", e);
         }

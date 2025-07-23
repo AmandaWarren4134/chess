@@ -12,19 +12,23 @@ import static org.mindrot.jbcrypt.BCrypt.checkpw;
 class MySqlUserTest {
 
     private static MySqlUser userDao;
+    private static MySqlAuth authDao;
 
     @BeforeAll
     static void setup() throws DataAccessException {
         userDao = new MySqlUser();
+        authDao = new MySqlAuth();
     }
 
     @BeforeEach
     void clearDatabaseBeforeEach() throws DataAccessException {
+        authDao.clearAllAuthTokens();
         userDao.clearAllUsers();
     }
 
     @AfterEach
     void clearDatabaseAfterEach() throws DataAccessException {
+        authDao.clearAllAuthTokens();
         userDao.clearAllUsers();
     }
 
@@ -71,7 +75,7 @@ class MySqlUserTest {
         System.out.print("Exception message: " + ex.getMessage());
 
         // Assertions
-        assertTrue(ex.getCause().getMessage().contains("already taken"));
+        assertTrue(ex.getMessage().contains("already taken"));
     }
 
     @Test

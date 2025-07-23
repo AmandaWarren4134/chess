@@ -116,7 +116,9 @@ class MySqlAuthTest {
     void clearAllAuthTokens() throws DataAccessException {
         // Fill the database
         String firstToken = authDao.createAuth("firstUser");
+        userDao.createUser("second", "abcdefg!!!", "second@gmail.com");
         String secondToken = authDao.createAuth("second");
+        userDao.createUser("third", "lmnopqrstuv!!!", "third@gmail.com");
         String thirdToken = authDao.createAuth("third");
 
         // Make sure they exist

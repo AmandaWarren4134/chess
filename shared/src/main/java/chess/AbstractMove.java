@@ -6,7 +6,9 @@ public abstract class AbstractMove {
 
     /* Start moving in a direction, check if it is on the board, if it is blocked by a piece of the same color,
      * or if it is a piece that can be captured */
-    protected static void addDirection(int rowDelta, int colDelta, ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessMove> moves) {
+    protected static void addDirection(int rowDelta, int colDelta, ChessBoard board,
+                                       ChessPosition myPosition, ChessPiece piece,
+                                       Collection<ChessMove> moves) {
         int nextRow = myPosition.getRow();
         int nextColumn = myPosition.getColumn();
 
@@ -33,7 +35,9 @@ public abstract class AbstractMove {
         }
     }
 
-    protected static void setOfMovements(int[][] setMovements, ChessBoard board, ChessPosition myPosition, ChessPiece piece, Collection<ChessMove> moves) {
+    protected static void setOfMovements(int[][] setMovements, ChessBoard board,
+                                         ChessPosition myPosition, ChessPiece piece,
+                                         Collection<ChessMove> moves) {
         for (int[] movement : setMovements) {
             int nextRow = myPosition.getRow() + movement[0];
             int nextColumn = myPosition.getColumn() + movement[1];

@@ -18,16 +18,32 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
 
-    private UserService testUserService;
-    private MySqlUser testUserDAO;
-    private MySqlAuth testAuthDAO;
+    private static UserService testUserService;
+    private static MySqlUser testUserDAO;
+    private static MySqlAuth testAuthDAO;
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    static  void setUp() {
         testUserDAO = new MySqlUser();
         testAuthDAO = new MySqlAuth();
+    }
+
+    @BeforeEach
+    public void clearDatabaseBeforeEach() {
         testUserService = new UserService(testUserDAO, testAuthDAO);
 
+        try {
+            testAuthDAO.clearAllAuthTokens();
+            testUserDAO.clearAllUsers();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterEach
+    public void clearDatabaseAfterEach() throws DataAccessException {
+        testAuthDAO.clearAllAuthTokens();
+        testUserDAO.clearAllUsers();
     }
 
     @Test
@@ -101,10 +117,7 @@ class UserServiceTest {
 
         LogoutResult result = testUserService.logout(logoutRequest);
         assertNotNull(result);
-        assertThrows(DataAccessException.class, () -> {
-            testAuthDAO.getAuth(authToken);
-        });
-
+        assertNull(testAuthDAO.getAuth(authToken));
     }
 
     @Test

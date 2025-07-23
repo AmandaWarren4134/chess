@@ -10,7 +10,9 @@ import java.sql.*;
 public class MySqlAuth implements IAuthDAO {
     @Override
     public String createAuth(String username) throws DataAccessException {
-        String newAuthToken = null;
+
+        String newAuthToken = createAuthToken();
+
         if (username == null || username.isBlank()) {
             throw new DataAccessException("Username may not be empty or null.");
         }
@@ -20,30 +22,18 @@ public class MySqlAuth implements IAuthDAO {
         }
 
         try (Connection conn = DatabaseManager.getConnection()) {
-            System.out.println("Creating auth token for username: " + username);  // Debugging log
-
-            // Check if they already have an authToken
-            newAuthToken = getAuthTokenByUsername(username, conn);
-
-            if (newAuthToken != null) {
-                // If an auth token exists, return the existing one
-                System.out.println("User already has an existing auth token: " + newAuthToken);
-                return newAuthToken;
-            }
-
-            // Create new authToken if there is none
-            newAuthToken = createAuthToken();
 
             String statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, newAuthToken);
                 ps.setString(2, username);
                 int rowsAffected = ps.executeUpdate();
-                System.out.println("Rows affected: " + rowsAffected);  // Debugging log
+                if (rowsAffected == 0) {
+                    throw new DataAccessException("Error: Failed to create or update auth token for user: " + username);
+                }
+
             }
         } catch (SQLException e) {
-            System.out.println("Error creating auth token for username: " + username);  // Debugging log
-            e.printStackTrace();
             throw new DataAccessException("Error creating authToken.", e);
         }
         return newAuthToken;

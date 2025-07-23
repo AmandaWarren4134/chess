@@ -183,7 +183,9 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) return false; // Not in check, so not checkmate
+        if (!isInCheck(teamColor)) {
+            return false; // Not in check, so not checkmate
+        }
 
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
