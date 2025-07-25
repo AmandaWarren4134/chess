@@ -1,7 +1,5 @@
 package service;
 
-import dataaccess.MySqlUser;
-import dataaccess.MySqlAuth;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.InvalidPasswordException;
@@ -19,10 +17,10 @@ import org.mindrot.jbcrypt.BCrypt;
 import javax.xml.crypto.Data;
 
 public class UserService {
-    private final MySqlUser userDAO;
-    private final MySqlAuth authDAO;
+    private final IUserDAO userDAO;
+    private final IAuthDAO authDAO;
 
-    public UserService(MySqlUser userDAO, MySqlAuth authDAO) {
+    public UserService(IUserDAO userDAO, IAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

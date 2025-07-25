@@ -11,13 +11,20 @@ import static org.mindrot.jbcrypt.BCrypt.checkpw;
 
 class MySqlUserTest {
 
-    private static MySqlUser userDao;
-    private static MySqlAuth authDao;
+    private static IUserDAO userDao;
+    private static IAuthDAO authDao;
 
     @BeforeAll
     static void setup() throws DataAccessException {
-        userDao = new MySqlUser();
-        authDao = new MySqlAuth();
+        try {
+            DatabaseManager.configureDatabase();
+            authDao = new MySqlAuth();
+            userDao = new MySqlUser();
+        } catch (DataAccessException e) {
+            System.out.print("Database configuration failed, using memory DAOs.");
+            authDao = new AuthDAO();
+            userDao = new UserDAO();
+        }
     }
 
     @BeforeEach

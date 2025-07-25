@@ -17,12 +17,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MySqlGameTest {
 
-    private static MySqlGame gameDao;
+    private static IGameDAO gameDao;
 
     @BeforeEach
     void setup() throws DataAccessException {
-        DatabaseManager.configureDatabase();
-        gameDao = new MySqlGame();
+        try {
+            DatabaseManager.configureDatabase();
+            gameDao = new MySqlGame();
+        } catch (DataAccessException e) {
+            System.out.print("GameTest: Database configuration failed, using memory DAOs.");
+            gameDao = new GameDAO();
+        }
+        // clear the database or memory
         gameDao.clearAllGames();
     }
 

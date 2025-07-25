@@ -20,10 +20,10 @@ import service.response.ListResult;
 import java.util.ArrayList;
 
 public class GameService {
-    private final MySqlGame gameDAO;
-    private final MySqlAuth authDAO;
+    private final IGameDAO gameDAO;
+    private final IAuthDAO authDAO;
 
-    public GameService (MySqlGame gameDAO, MySqlAuth authDAO) {
+    public GameService (IGameDAO gameDAO, IAuthDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }

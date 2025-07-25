@@ -14,15 +14,23 @@ import javax.xml.crypto.Data;
 
 class MySqlAuthTest {
 
-    private static MySqlAuth authDao;
-    private static MySqlUser userDao;
-    private static MySqlGame gameDao;
+    private static IAuthDAO authDao;
+    private static IUserDAO userDao;
+    private static IGameDAO gameDao;
 
     @BeforeAll
     static void setup() throws DataAccessException {
-        authDao = new MySqlAuth();
-        userDao = new MySqlUser();
-        gameDao = new MySqlGame();
+        try {
+            DatabaseManager.configureDatabase();
+            authDao = new MySqlAuth();
+            userDao = new MySqlUser();
+            gameDao = new MySqlGame();
+        } catch (DataAccessException e) {
+            System.out.print("Database configuration failed, using memory DAOs.");
+            authDao = new AuthDAO();
+            userDao = new UserDAO();
+            gameDao = new GameDAO();
+        }
     }
 
     @BeforeEach

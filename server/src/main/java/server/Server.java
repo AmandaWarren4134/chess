@@ -15,19 +15,25 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        // Create and Configure Database
-
-        try { DatabaseManager.configureDatabase();
-        } catch (DataAccessException e) {
-            // Swap to using memory DAOs ???
-            System.out.print("Error: Cannot configure database");
-        }
-
-
         // Shared DAOs
-        MySqlAuth authDAO = new MySqlAuth();
-        MySqlGame gameDAO = new MySqlGame();
-        MySqlUser userDAO = new MySqlUser();
+        IAuthDAO authDAO;
+        IGameDAO gameDAO;
+        IUserDAO userDAO;
+
+        // Create and Configure Database
+        try {
+            DatabaseManager.configureDatabase();
+            authDAO = new MySqlAuth();
+            gameDAO = new MySqlGame();
+            userDAO = new MySqlUser();
+
+        } catch (DataAccessException e) {
+            // Swap to using memory DAOs
+            System.out.print("Database configuration failed, using memory DAOs.");
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+            userDAO = new UserDAO();
+        }
 
         // Shared Services
         UserService userService = new UserService(userDAO, authDAO);
