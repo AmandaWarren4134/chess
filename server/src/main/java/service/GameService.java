@@ -1,7 +1,5 @@
 package service;
 
-import dataaccess.MySqlGame;
-import dataaccess.MySqlAuth;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
@@ -10,12 +8,12 @@ import model.AuthData;
 import model.GameData;
 import chess.ChessGame;
 import dataaccess.*;
-import service.request.CreateRequest;
-import service.request.JoinRequest;
-import service.request.ListRequest;
-import service.response.CreateResult;
-import service.response.JoinResult;
-import service.response.ListResult;
+import request.CreateRequest;
+import request.JoinRequest;
+import request.ListRequest;
+import response.CreateResult;
+import response.JoinResult;
+import response.ListResult;
 
 import java.util.ArrayList;
 

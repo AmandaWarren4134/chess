@@ -2,8 +2,8 @@ package server.handler;
 
 import com.google.gson.Gson;
 import service.GameService;
-import service.request.CreateRequest;
-import service.response.CreateResult;
+import request.CreateRequest;
+import response.CreateResult;
 import spark.Request;
 import spark.Response;
 import spark.Route;

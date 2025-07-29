@@ -1,3 +1,3 @@
-package service.response;
+package response;
 
 public record LoginResult(String username, String authToken) {}

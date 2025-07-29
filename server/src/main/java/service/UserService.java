@@ -6,15 +6,13 @@ import dataaccess.exceptions.InvalidPasswordException;
 import dataaccess.exceptions.UnauthorizedException;
 import model.UserData;
 import dataaccess.*;
-import service.request.LogoutRequest;
-import service.request.RegisterRequest;
-import service.response.LogoutResult;
-import service.response.RegisterResult;
-import service.response.LoginResult;
-import service.request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import response.LogoutResult;
+import response.RegisterResult;
+import response.LoginResult;
+import request.LoginRequest;
 import org.mindrot.jbcrypt.BCrypt;
-
-import javax.xml.crypto.Data;
 
 public class UserService {
     private final IUserDAO userDAO;

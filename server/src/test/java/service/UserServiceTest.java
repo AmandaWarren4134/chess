@@ -1,18 +1,15 @@
 package service;
 
-import dataaccess.AuthDAO;
 import dataaccess.exceptions.DataAccessException;
-import dataaccess.UserDAO;
 import dataaccess.MySqlAuth;
-import dataaccess.MySqlGame;
 import dataaccess.MySqlUser;
 import org.junit.jupiter.api.*;
-import service.request.LoginRequest;
-import service.request.LogoutRequest;
-import service.request.RegisterRequest;
-import service.response.LoginResult;
-import service.response.LogoutResult;
-import service.response.RegisterResult;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import response.LoginResult;
+import response.LogoutResult;
+import response.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

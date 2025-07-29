@@ -6,14 +6,14 @@ import dataaccess.*;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
 import org.junit.jupiter.api.*;
-import service.request.CreateRequest;
-import service.request.JoinRequest;
-import service.request.ListRequest;
-import service.request.RegisterRequest;
-import service.response.CreateResult;
-import service.response.JoinResult;
-import service.response.ListResult;
-import service.response.RegisterResult;
+import request.CreateRequest;
+import request.JoinRequest;
+import request.ListRequest;
+import request.RegisterRequest;
+import response.CreateResult;
+import response.JoinResult;
+import response.ListResult;
+import response.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 
