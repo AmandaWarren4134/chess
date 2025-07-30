@@ -114,7 +114,7 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("Register Username Taken")
-    void register() throws Exception {
+    void usernameTakenRegister() throws Exception {
         var request = new RegisterRequest("amanda", "newPassword", "amanda2@gmail.com");
         var ex = assertThrows(ResponseException.class, () -> {
             facade.register(request);
@@ -124,7 +124,8 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void login() throws Exception {
+    @DisplayName("Login With Nonexisting User")
+    void invalidUserLogin() throws Exception {
         var request = new LoginRequest("userDoesNotExist", "password");
 
         var ex = assertThrows(ResponseException.class, () -> {
@@ -135,11 +136,29 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void logout() {
+    @DisplayName("Logout Twice")
+    void doubleLogout() throws Exception {
+        facade.logout();
+
+        var ex = assertThrows(ResponseException.class, () -> {
+            facade.logout();
+        });
+        assertEquals(401, ex.statusCode());
     }
 
     @Test
-    void list() {
+    @DisplayName("List No Games")
+    void noGamesList() {
+        var request = new ListRequest(existingAuthToken);
+        var result = facade.list(request);
+
+        assertEquals(2, result.games().size());
+        assertEquals("game1", result.games().getFirst().gameName());
+    }
+
+    @Test
+    @DisplayName("Invalid AuthToken")
+    void invalidAuthTokenList() {
     }
 
     @Test
