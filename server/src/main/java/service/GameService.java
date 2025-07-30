@@ -35,11 +35,14 @@ public class GameService {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
+        // Get Username
+        String username = authDAO.getAuth(joinRequest.authToken()).username();
+
         // Get GameData
         GameData game = gameDAO.getGame(joinRequest.gameID());
 
         // Check Color Availability
-        if (!colorIsAvailable(game, joinRequest.playerColor())) {
+        if (!colorIsAvailable(username, game, joinRequest.playerColor())) {
             throw new AlreadyTakenException("Error: color already taken");
         }
 
@@ -54,10 +57,10 @@ public class GameService {
         return new JoinResult();
     }
 
-    private boolean colorIsAvailable (GameData game, ChessGame.TeamColor color) {
-        if (game.whiteUsername() == null && color == ChessGame.TeamColor.WHITE) {
+    private boolean colorIsAvailable (String username, GameData game, ChessGame.TeamColor color) {
+        if ((game.whiteUsername() == null || game.whiteUsername().equals(username)) && color == ChessGame.TeamColor.WHITE) {
             return true;
-        } else {return game.blackUsername() == null && color == ChessGame.TeamColor.BLACK;}
+        } else {return (game.blackUsername() == null || game.blackUsername().equals(username))&& color == ChessGame.TeamColor.BLACK;}
     }
 
     private void validateJoinRequest (JoinRequest request) throws DataAccessException {

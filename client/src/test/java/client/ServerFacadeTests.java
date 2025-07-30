@@ -181,7 +181,23 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void join() {
+    @DisplayName("Join An Occupied Team")
+    void join() throws Exception {
+        var result = facade.create(new CreateRequest("game2", existingAuthToken));
+        var request = new JoinRequest(existingAuthToken,  ChessGame.TeamColor.BLACK, result.gameID());
+
+        facade.join(request);
+
+        // Create a second user and request to join the same team color
+        var secondRegister = facade.register(new RegisterRequest("secondUser", "password", "secondUser@gmail.com"));
+        facade.setAuthToken(secondRegister.authToken());
+
+        var ex = assertThrows(ResponseException.class, () -> {
+            JoinRequest secondJoin = new JoinRequest(existingAuthToken, ChessGame.TeamColor.BLACK, result.gameID());
+            facade.join(secondJoin);
+        }) ;
+
+        assertEquals(403, ex.statusCode());
     }
 
     private void clearDatabase() throws Exception {
