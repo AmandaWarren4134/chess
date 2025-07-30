@@ -22,6 +22,11 @@ public class CreateHandler implements Route {
         try {
             String authToken = request.headers("authorization");
             CreateRequest bodyRequest = gson.fromJson(request.body(), CreateRequest.class);
+
+            System.out.println("Header Auth: " + authToken);
+            System.out.println("Raw body: " + request.body());
+            System.out.println("Parsed game name: " + bodyRequest.gameName());
+
             CreateRequest createRequest = new CreateRequest(bodyRequest.gameName(), authToken);
             CreateResult result = gameService.create(createRequest);
 

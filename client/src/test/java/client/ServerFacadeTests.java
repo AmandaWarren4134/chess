@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import request.*;
 import response.*;
@@ -39,6 +40,7 @@ public class ServerFacadeTests {
         clearDatabase();
         var result = facade.register(new RegisterRequest("amanda", "password", "amanda@gmail.com"));
         this.existingAuthToken = result.authToken();
+        facade.setAuthToken(existingAuthToken);
     }
 
     @Test
@@ -62,8 +64,7 @@ public class ServerFacadeTests {
     @Test
     @DisplayName("Positive Logout")
     void normalLogout() throws Exception {
-        var request = new LogoutRequest(existingAuthToken);
-        facade.logout(request);
+        facade.logout();
 
         var ex = assertThrows(ResponseException.class, () -> {
             ListRequest listRequest = new ListRequest(existingAuthToken);
@@ -75,25 +76,62 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("Positive List")
-    void normalList() {
+    void normalList() throws Exception {
+        facade.create(new CreateRequest("game1", existingAuthToken));
+        facade.create(new CreateRequest("game2", existingAuthToken));
+
+        var request = new ListRequest(existingAuthToken);
+        var result = facade.list(request);
+
+        assertEquals(2, result.games().size());
+        assertEquals("game1", result.games().getFirst().gameName());
     }
 
     @Test
     @DisplayName("Positive Create")
-    void normalCreate() {
+    void normalCreate() throws Exception {
+        var request = new CreateRequest("game1", existingAuthToken);
+        var result = facade.create(request);
+
+        assertNotNull(result);
+        assertTrue(result.gameID() > 0);
     }
 
     @Test
     @DisplayName("Positive Join")
-    void normalJoin() {
+    void normalJoin() throws Exception {
+        var result = facade.create(new CreateRequest("game2", existingAuthToken));
+        var request = new JoinRequest(existingAuthToken,  ChessGame.TeamColor.BLACK, result.gameID());
+
+        facade.join(request);
+
+        var listRequest = new ListRequest(existingAuthToken);
+        var listResult = facade.list(listRequest);
+
+        assertEquals("amanda", listResult.games().getFirst().blackUsername());
+
     }
 
     @Test
-    void register() {
+    @DisplayName("Register Username Taken")
+    void register() throws Exception {
+        var request = new RegisterRequest("amanda", "newPassword", "amanda2@gmail.com");
+        var ex = assertThrows(ResponseException.class, () -> {
+            facade.register(request);
+        });
+
+        assertEquals(403, ex.statusCode());
     }
 
     @Test
-    void login() {
+    void login() throws Exception {
+        var request = new LoginRequest("userDoesNotExist", "password");
+
+        var ex = assertThrows(ResponseException.class, () -> {
+            facade.login(request);
+        });
+
+        assertEquals(401, ex.statusCode());
     }
 
     @Test

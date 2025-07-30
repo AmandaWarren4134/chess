@@ -51,8 +51,7 @@ public class PostLoginUI {
     }
 
     private CommandResult logout() throws ResponseException {
-        var request = new LogoutRequest(authToken);
-        server.logout(request);
+        server.logout();
 
         this.state = State.SIGNEDOUT;
         this.authToken = null;

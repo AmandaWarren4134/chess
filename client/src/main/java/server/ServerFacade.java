@@ -32,9 +32,12 @@ public class ServerFacade {
         return this.makeRequest("POST", path, request, LoginResult.class);
     }
 
-    public void logout(LogoutRequest request) throws ResponseException {
+    public void logout() throws ResponseException {
+        if (this.authToken == null || this.authToken.isBlank()) {
+            throw new ResponseException(400, "No auth token set");
+        }
         var path = "/session";
-        this.makeRequest("DELETE", path, request, null);
+        this.makeRequest("DELETE", path, null, null);
     }
 
     public ListResult list(ListRequest request) throws ResponseException {
@@ -72,7 +75,7 @@ public class ServerFacade {
                 http.setRequestProperty("authorization", authToken);
             }
 
-            if (method.equals("POST") || method.equals("PUT") && request != null) {
+            if ((method.equals("POST") || method.equals("PUT")) && request != null) {
                 writeBody(request,http);
             }
 
