@@ -42,7 +42,7 @@ public class PostLoginUI {
                 case "join" -> join(params);
                 case "observe" -> observe(params);
                 case "help" -> help();
-                case "quit" -> new CommandResult(true, "Quitting chess...", false, true);
+                case "quit" -> new CommandResult(true, "Exiting back to login menu...", false, true);
                 default -> new CommandResult(false, "Unknown command, type \"help\" to see more commands.", false, false);
             };
         } catch (ResponseException ex) {

@@ -83,11 +83,9 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
 
             int status = http.getResponseCode();
-            System.out.println("DEBUG HTTP status: " + status);
 
             InputStream stream = (status >= 200 && status < 300) ? http.getInputStream() : http.getErrorStream();
             String rawJson = new String(stream.readAllBytes());
-            System.out.println("DEBUG raw response: " + rawJson);
 
             if (responseClass != null && !rawJson.isBlank()) {
                 return new Gson().fromJson(rawJson, responseClass);
@@ -122,40 +120,6 @@ public class ServerFacade {
             throw new ResponseException(status, "other failure: " + status);
         }
     }
-
-//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-//        T response = null;
-//        try(InputStream respBody = http.getInputStream()) {
-//            //InputStreamReader reader = new InputStreamReader(respBody);
-//            String rawJson = new String(respBody.readAllBytes());
-//            System.out.println("DEBUG client raw response: " + rawJson); // debug
-//            if (responseClass != null) {
-//                response = new Gson().fromJson(rawJson, responseClass);
-//            }
-//        }
-//        return response;
-//    }
-
-//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-//        InputStream bodyStream = null;
-//        int status = http.getResponseCode();
-//
-//        if (status >= 200 && status < 300) {
-//            bodyStream = http.getInputStream();
-//        } else {
-//            bodyStream = http.getErrorStream();  // this is where error bodies go
-//        }
-//
-//        if (bodyStream == null) return null;
-//
-//        String rawJson = new String(bodyStream.readAllBytes());
-//        System.out.println("DEBUG client raw response: " + rawJson);
-//
-//        if (responseClass != null && !rawJson.isBlank()) {
-//            return new Gson().fromJson(rawJson, responseClass);
-//        }
-//        return null;
-//    }
 
     private boolean isSuccessful (int status) {
         return status / 100 == 2;
