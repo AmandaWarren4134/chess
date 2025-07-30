@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResponseException extends Exception {
-    final private int statusCode;
+    public final int statusCode;
 
     public ResponseException(int statusCode, String message) {
         super(message);
@@ -21,12 +21,18 @@ public class ResponseException extends Exception {
 
     public static ResponseException fromJson(InputStream stream) {
         var map = new Gson().fromJson(new InputStreamReader(stream), HashMap.class);
-        var status = ((Double)map.get("status")).intValue();
-        String message = map.get("message").toString();
+
+        Object statusObj = map.get("status");
+        int status = (statusObj instanceof Number) ? ((Number) statusObj).intValue() : 500;
+
+        Object messageObj = map.get("message");
+        String message = (messageObj != null) ? messageObj.toString() : "Unknown error";
+
         return new ResponseException(status, message);
     }
 
-    public int StatusCode() {
+    public int statusCode() {
         return statusCode;
     }
+
 }

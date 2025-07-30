@@ -7,13 +7,13 @@ import request.*;
 import response.*;
 import server.ServerFacade;
 
-public class PreloginUI {
+public class PreLoginUI {
     private final ServerFacade server;
     private String authToken;
     private String username;
     private State state = State.SIGNEDOUT;
 
-    public PreloginUI(ServerFacade server) {
+    public PreLoginUI(ServerFacade server) {
         this.server = server;
     }
 

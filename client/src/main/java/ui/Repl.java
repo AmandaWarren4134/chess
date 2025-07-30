@@ -4,8 +4,6 @@ import server.ServerFacade;
 
 import java.util.Scanner;
 
-import static ui.EscapeSequences.*;
-
 public class Repl {
     private final String serverUrl;
     private final ServerFacade server;
@@ -17,7 +15,7 @@ public class Repl {
     }
 
     public void run() {
-        var prelogin = new PreloginUI(server);
+        var prelogin = new PreLoginUI(server);
         CommandResult result;
 
         while (true) {
@@ -32,7 +30,7 @@ public class Repl {
             }
 
             if (result.goToPostLogin) {
-                var postlogin = new PostloginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
+                var postlogin = new PostLoginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
                 while (true) {
                     System.out.print(">>> ");
                     var postInput = scanner.nextLine();

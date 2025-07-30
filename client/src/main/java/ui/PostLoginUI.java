@@ -1,9 +1,7 @@
 package ui;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -14,16 +12,15 @@ import response.*;
 import server.ServerFacade;
 
 import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessGame.TeamColor.BLACK;
 
-public class PostloginUI {
+public class PostLoginUI {
     private final ServerFacade server;
     private String authToken;
     private String username;
     private State state;
     private ArrayList<GameData> lastGameList = new ArrayList<>();
 
-    public PostloginUI(ServerFacade server, String authToken, String username) {
+    public PostLoginUI(ServerFacade server, String authToken, String username) {
         this.server = server;
         this.authToken = authToken;
         this.username = username;
@@ -55,7 +52,7 @@ public class PostloginUI {
 
     private CommandResult logout() throws ResponseException {
         var request = new LogoutRequest(authToken);
-        LogoutResult result = server.logout(request);
+        server.logout(request);
 
         this.state = State.SIGNEDOUT;
         this.authToken = null;
@@ -91,7 +88,7 @@ public class PostloginUI {
         CreateResult result = server.create(request);
 
         if( result != null && result.gameID() > 0) {
-            return new CommandResult(true, "Successfully created game " + result.gameID() + ".\n", false, false);
+            return new CommandResult(true, "Successfully created game.\n", false, false);
         } else {
             return new CommandResult(false, "Failed to create new game.\n", false, false);
         }

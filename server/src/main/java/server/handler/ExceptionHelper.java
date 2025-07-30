@@ -15,22 +15,28 @@ public class ExceptionHelper {
     public static String handleException(Exception e, Response response) {
         response.type("application/json");
 
+        int status;
+        String message;
+
         if (e instanceof BadRequestException) {
-            response.status(400);
-            return GSON.toJson(Map.of("message", "Error: bad request"));
+            status = 400;
+            message = "Error: bad request";
         } else if (e instanceof UnauthorizedException || e instanceof InvalidPasswordException) {
-            response.status(401);
-            return GSON.toJson(Map.of("message", "Error: unauthorized"));
+            status = 401;
+            message = "Error: unauthorized";
         } else if (e instanceof AlreadyTakenException) {
-            response.status(403);
-            return GSON.toJson(Map.of("message", "Error: already taken."));
+            status = 403;
+            message = "Error: already taken";
         } else if (e instanceof DataAccessException || e instanceof SQLException) {
-            response.status(500);
-            return GSON.toJson(Map.of("message", "Error: database connection failed"));
+            status = 500;
+            message = "Error: database connection failed";
         }
         else {
-            response.status(500);
-            return GSON.toJson(Map.of("message", "Error: " + e.getMessage()));
+            status = 500;
+            message = "Error: " + e.getMessage();
         }
+
+        response.status(status);
+        return GSON.toJson(Map.of("message", message, "status", status));
     }
 }

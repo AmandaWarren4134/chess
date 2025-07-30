@@ -32,9 +32,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, request, LoginResult.class);
     }
 
-    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+    public void logout(LogoutRequest request) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, request, LogoutResult.class);
+        this.makeRequest("DELETE", path, request, null);
     }
 
     public ListResult list(ListRequest request) throws ResponseException {
@@ -75,7 +75,6 @@ public class ServerFacade {
             if (method.equals("POST") || method.equals("PUT") && request != null) {
                 writeBody(request,http);
             }
-
 
             http.connect();
             throwIfNotSuccessful(http);

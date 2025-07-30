@@ -3,6 +3,7 @@ package client;
 import org.junit.jupiter.api.*;
 import request.*;
 import response.*;
+import exception.*;
 import server.Server;
 import server.ServerFacade;
 
@@ -11,11 +12,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
+    private static String existingAuthToken;
 
     @BeforeAll
     public static void init() {
@@ -33,6 +37,8 @@ public class ServerFacadeTests {
     @BeforeEach
     public void clearDatabaseBeforeEach() throws Exception {
         clearDatabase();
+        var result = facade.register(new RegisterRequest("amanda", "password", "amanda@gmail.com"));
+        this.existingAuthToken = result.authToken();
     }
 
     @Test
@@ -40,18 +46,31 @@ public class ServerFacadeTests {
     void normalRegister() throws Exception {
         var request = new RegisterRequest("myUser", "myPass", "myUser@gmail.com");
         var result = facade.register(request);
-        Assertions.assertNotNull(result.authToken());
-        Assertions.assertEquals("myUser", result.username());
+        assertNotNull(result.authToken());
+        assertEquals("myUser", result.username());
     }
 
     @Test
     @DisplayName("Positive Login")
-    void normalLogin() {
+    void normalLogin() throws Exception {
+        var request = new LoginRequest("amanda", "password");
+        var result = facade.login(request);
+        assertNotNull(result.authToken());
+        assertEquals("amanda", result.username());
     }
 
     @Test
     @DisplayName("Positive Logout")
-    void normalLogout() {
+    void normalLogout() throws Exception {
+        var request = new LogoutRequest(existingAuthToken);
+        facade.logout(request);
+
+        var ex = assertThrows(ResponseException.class, () -> {
+            ListRequest listRequest = new ListRequest(existingAuthToken);
+            facade.list(listRequest);
+        });
+
+        assertEquals(401, ex.statusCode());
     }
 
     @Test
