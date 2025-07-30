@@ -26,7 +26,7 @@ public class PreloginUI {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> new CommandResult(true, "Goodbye!", false, false);
+                case "quit" -> new CommandResult(true, "Quitting chess...", false, true);
                 case "help" -> help();
                 default -> new CommandResult(false, "Unknown command, type \"help\" to see more commands.", false, false);
             };
