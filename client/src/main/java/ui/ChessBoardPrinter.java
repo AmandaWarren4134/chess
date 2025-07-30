@@ -11,7 +11,6 @@ import static ui.EscapeSequences.*;
 public class ChessBoardPrinter {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_WIDTH = 3;
-    private static final int SQUARE_HEIGHT = 3;
     private static final String [] COLUMN_LABELS = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final String [] ROW_LABELS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
@@ -24,38 +23,43 @@ public class ChessBoardPrinter {
 
         if (perspective == WHITE) {
             rowStart = 7; rowEnd = -1; rowStep = -1;
-            colStart = 0; colEnd = 7; colStep = 1;
+            colStart = 0; colEnd = 8; colStep = 1;
         }
         else {
-            rowStart = 0; rowEnd = 7; rowStep = 1;
+            rowStart = 0; rowEnd = 8; rowStep = 1;
             colStart = 7; colEnd = -1; colStep = -1;
         }
 
         drawHeaders(out, perspective);
 
         for (int row = rowStart; row != rowEnd; row += rowStep) {
-            for (int squareRow = 0; squareRow < SQUARE_HEIGHT; squareRow++) {
-                out.print(EMPTY);
-                out.print(ROW_LABELS[row]);
+            // left-side row label
+            resetColors(out);
+            setBlack(out);
+            out.print(" " + ROW_LABELS[row] + " ");
+
+                // Draw each square in the row
                 for (int col = colStart; col != colEnd; col += colStep) {
-                    if ((row + col) % 2 == 0) {
-                        setLightSquare(out);
-                    } else {
+                    ChessPiece currentPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
+
+
+
+                    boolean isDark = (row + col) % 2 == 0;
+                    if (isDark) {
                         setDarkSquare(out);
-                    }
-                    if (squareRow == SQUARE_HEIGHT / 2) {
-                        ChessPiece currentPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
-                        out.print(getPieceSymbol(currentPiece));
                     } else {
-                        out.print(EMPTY);
+                        setLightSquare(out);
                     }
+                    String symbol = getPieceSymbol(currentPiece);
+                    out.print(symbol);
                 }
-                out.print(EMPTY);
-                out.print(ROW_LABELS[row]);
+
+                // Right-side row label
+                resetColors(out);
+                setBlack(out);
+                out.print(" " + ROW_LABELS[row] + " ");
                 resetColors(out);
                 out.println();
-            }
-            out.println();
         }
 
         drawHeaders(out, perspective);
@@ -73,35 +77,30 @@ public class ChessBoardPrinter {
     private static void drawHeaders(PrintStream out, ChessGame.TeamColor perspective) {
         setBlack(out);
 
-        out.print(EMPTY);
         String[] columns = (perspective == WHITE) ? COLUMN_LABELS : reverse(COLUMN_LABELS);
+
+        out.print("   ");
+
         for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
             drawHeader(out, columns[col]);
         }
 
+        resetColors(out);
         out.println();
     }
 
     private static void drawHeader(PrintStream out, String headerText) {
-        int prefixLength = SQUARE_WIDTH / 2;
-        int suffixLength = SQUARE_WIDTH - prefixLength - 1;
-
-        out.print(EMPTY.repeat(prefixLength));
         printHeaderText(out, headerText);
-        out.print(EMPTY.repeat(suffixLength));
+        out.print("   ");
     }
 
     private static void printHeaderText(PrintStream out, String player) {
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_MAGENTA);
-
-        out.print(player);
-
         setBlack(out);
+        out.print(player);
     }
 
     private String getPieceSymbol(ChessPiece piece) {
-        if (piece == null) return EMPTY;
+        if (piece == null) {return EMPTY;}
 
         return switch (piece.getTeamColor()) {
             case WHITE -> switch (piece.getPieceType()) {
@@ -125,7 +124,7 @@ public class ChessBoardPrinter {
 
     private static void setBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_MAGENTA);
     }
 
     private static void setLightSquare(PrintStream out) {
@@ -138,7 +137,7 @@ public class ChessBoardPrinter {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private void resetColors(PrintStream out) {
+    private static void resetColors(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
     }

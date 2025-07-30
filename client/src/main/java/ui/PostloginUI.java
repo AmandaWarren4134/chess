@@ -126,6 +126,7 @@ public class PostloginUI {
         try {
             server.join(request);
             ChessBoard board = new ChessBoard();
+            board.resetBoard();
             ChessBoardPrinter printer = new ChessBoardPrinter();
             printer.print(board, teamColor);
 
@@ -148,6 +149,7 @@ public class PostloginUI {
         }
 
         ChessBoard board = new ChessBoard();
+        board.resetBoard();
         ChessBoardPrinter printer = new ChessBoardPrinter();
         printer.print(board, WHITE);
 
