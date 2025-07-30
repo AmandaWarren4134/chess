@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import request.*;
 import response.*;
@@ -148,21 +149,35 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("List No Games")
-    void noGamesList() {
+    void noGamesList() throws Exception {
         var request = new ListRequest(existingAuthToken);
         var result = facade.list(request);
 
-        assertEquals(2, result.games().size());
-        assertEquals("game1", result.games().getFirst().gameName());
+        assertEquals(0, result.games().size());
     }
 
     @Test
     @DisplayName("Invalid AuthToken")
-    void invalidAuthTokenList() {
+    void invalidAuthTokenList() throws Exception {
+        facade.setAuthToken("invalidAuthToken");
+        var request = new ListRequest("invalidAuthToken");
+
+        var ex = assertThrows(ResponseException.class, () -> {
+            facade.list(request);
+        });
+
+        assertEquals(401, ex.statusCode());
     }
 
     @Test
-    void create() {
+    @DisplayName("Create Game With Existing Name")
+    void create() throws Exception {
+        facade.create(new CreateRequest("game1", existingAuthToken));
+        var ex = assertThrows(ResponseException.class, () -> {
+            facade.create(new CreateRequest("game1", existingAuthToken));
+        });
+
+        assertEquals(403, ex.statusCode());
     }
 
     @Test

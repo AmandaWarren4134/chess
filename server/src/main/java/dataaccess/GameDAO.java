@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import chess.ChessGame;
@@ -19,6 +20,15 @@ public class GameDAO implements IGameDAO {
      */
     @Override
     public int createGame(String gameName) throws DataAccessException{
+        if (gameName == null || gameName.isBlank()) {
+            throw new DataAccessException("Game name cannot be empty or null.");
+        }
+
+        for (GameData game : gameList.values()) {
+            if (gameName.equals(game.gameName())) {
+                throw new AlreadyTakenException("Game name " + gameName + " is already taken.");
+            }
+        }
         Random random = new Random();
         int gameID = random.nextInt(Integer.MAX_VALUE) + 1;
         ChessGame game = new ChessGame();

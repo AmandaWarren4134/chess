@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 
@@ -13,6 +14,7 @@ public class MySqlGame implements IGameDAO {
 
     @Override
     public int createGame(String gameName) throws DataAccessException {
+        // Check if game name is blank
         if (gameName == null || gameName.isBlank()) {
             throw new DataAccessException("Game name cannot be empty or null.");
         }
@@ -21,6 +23,17 @@ public class MySqlGame implements IGameDAO {
         String gameJson = GSON.toJson(game);
 
         try (Connection conn = DatabaseManager.getConnection()) {
+            // Check if game name is already taken
+            String checkForGameName = "SELECT gameName FROM game WHERE gameName = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkForGameName)) {
+                checkStmt.setString(1, gameName);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        throw new AlreadyTakenException("GameName: " + gameName + " already taken.");
+                    }
+                }
+            }
+
             String statement = "INSERT INTO game (gameName, gameState) VALUES (?,?)";
             try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
 
