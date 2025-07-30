@@ -27,6 +27,7 @@ public class CreateHandler implements Route {
 
             response.status(200);
             response.type("application/json");
+            System.out.println("Returning CreateResult: " + gson.toJson(result));   // debug
             return gson.toJson(result);
         } catch (Exception e) {
             return ExceptionHelper.handleException(e, response);

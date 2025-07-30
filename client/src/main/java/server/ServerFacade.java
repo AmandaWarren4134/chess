@@ -12,9 +12,14 @@ import java.net.*;
 public class ServerFacade {
 
     private final String SERVER_URL;
+    private String authToken;
 
     public ServerFacade(String url) {
         SERVER_URL = url;
+    }
+
+    public void setAuthToken(String token) {
+        this.authToken = token;
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
@@ -42,9 +47,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, request, CreateResult.class);
     }
 
-    public JoinResult join(JoinRequest request) throws ResponseException {
+    public void join(JoinRequest request) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("PUT", path, request, JoinResult.class);
+        this.makeRequest("PUT", path, request, null);
     }
 
     public String getServerUrl() {
@@ -56,12 +61,37 @@ public class ServerFacade {
             URL url = (new URI(SERVER_URL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
 
-            writeBody(request,http);
+            if (method.equals("POST") || method.equals("PUT")) {
+                http.setDoOutput(true);
+            } else {
+                http.setDoOutput(false);
+            }
+
+            if (authToken != null && !authToken.isBlank()) {
+                http.setRequestProperty("authorization", authToken);
+            }
+
+            if (method.equals("POST") || method.equals("PUT") && request != null) {
+                writeBody(request,http);
+            }
+
+
             http.connect();
             throwIfNotSuccessful(http);
-            return readBody(http, responseClass);
+
+            int status = http.getResponseCode();
+            System.out.println("DEBUG HTTP status: " + status);
+
+            InputStream stream = (status >= 200 && status < 300) ? http.getInputStream() : http.getErrorStream();
+            String rawJson = new String(stream.readAllBytes());
+            System.out.println("DEBUG raw response: " + rawJson);
+
+            if (responseClass != null && !rawJson.isBlank()) {
+                return new Gson().fromJson(rawJson, responseClass);
+            }
+            return null;
+
         } catch (ResponseException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -91,18 +121,39 @@ public class ServerFacade {
         }
     }
 
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-        T response = null;
-        if (http.getContentLength() < 0) {
-            try(InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
-            }
-        }
-        return response;
-    }
+//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+//        T response = null;
+//        try(InputStream respBody = http.getInputStream()) {
+//            //InputStreamReader reader = new InputStreamReader(respBody);
+//            String rawJson = new String(respBody.readAllBytes());
+//            System.out.println("DEBUG client raw response: " + rawJson); // debug
+//            if (responseClass != null) {
+//                response = new Gson().fromJson(rawJson, responseClass);
+//            }
+//        }
+//        return response;
+//    }
+
+//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+//        InputStream bodyStream = null;
+//        int status = http.getResponseCode();
+//
+//        if (status >= 200 && status < 300) {
+//            bodyStream = http.getInputStream();
+//        } else {
+//            bodyStream = http.getErrorStream();  // this is where error bodies go
+//        }
+//
+//        if (bodyStream == null) return null;
+//
+//        String rawJson = new String(bodyStream.readAllBytes());
+//        System.out.println("DEBUG client raw response: " + rawJson);
+//
+//        if (responseClass != null && !rawJson.isBlank()) {
+//            return new Gson().fromJson(rawJson, responseClass);
+//        }
+//        return null;
+//    }
 
     private boolean isSuccessful (int status) {
         return status / 100 == 2;

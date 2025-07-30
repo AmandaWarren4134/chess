@@ -1,5 +1,7 @@
 package ui;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,11 +21,15 @@ public class PostloginUI {
     private String authToken;
     private String username;
     private State state;
+    private ArrayList<GameData> lastGameList = new ArrayList<>();
 
     public PostloginUI(ServerFacade server, String authToken, String username) {
         this.server = server;
         this.authToken = authToken;
         this.username = username;
+        this.state = State.SIGNEDIN;
+
+        this.server.setAuthToken(authToken);
     }
 
     public CommandResult eval(String input) {
@@ -54,17 +60,20 @@ public class PostloginUI {
         this.state = State.SIGNEDOUT;
         this.authToken = null;
         this.username = null;
+        server.setAuthToken(null);
+
         return new CommandResult(true, "Logged out successfully.\n", false, false);
     }
 
     private CommandResult list() throws ResponseException {
         var request = new ListRequest(authToken);
         ListResult result = server.list(request);
+        lastGameList = result.games();
+
         StringBuilder output = new StringBuilder("Here are the current games:\n");
-        List<GameData> games = result.games();
-        for (int i = 0; i < games.size(); i++) {
-            var game = games.get(i);
-            output.append(String.format("%d. %s (White: %s, Black: %s)\n",
+        for (int i = 0; i < lastGameList.size(); i++) {
+            GameData game = lastGameList.get(i);
+            output.append(String.format("(%d) %s (White: %s, Black: %s)\n",
                     i + 1,
                     game.gameName(),
                     game.whiteUsername() != null ? game.whiteUsername() : "---",
@@ -93,12 +102,18 @@ public class PostloginUI {
             return new CommandResult(false, "Usage: join <id> [WHITE|BLACK]", false, false);
         }
 
-        int gameID;
+        int gameNumber;
         try {
-            gameID = Integer.parseInt(params[0]);
+            gameNumber = Integer.parseInt(params[0]) -1;
         } catch (NumberFormatException e) {
-            return new CommandResult(false, "Game ID must be a number.", false, false);
+            return new CommandResult(false, "Game number must be a number.", false, false);
         }
+
+        if (gameNumber < 0 || gameNumber >= lastGameList.size()) {
+            return new CommandResult(false, "Invalid Game Number.", false, false);
+        }
+
+        int gameID = lastGameList.get(gameNumber).gameID();
 
         ChessGame.TeamColor teamColor;
         try {
@@ -114,7 +129,7 @@ public class PostloginUI {
             ChessBoardPrinter printer = new ChessBoardPrinter();
             printer.print(board, teamColor);
 
-            return new CommandResult(true, "Successfully joined game " + gameID + ".\n", false, false);
+            return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false);
         } catch (ResponseException e) {
             return new CommandResult(false, e.getMessage(), false, false);
         }

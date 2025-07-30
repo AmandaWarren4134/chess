@@ -49,9 +49,11 @@ public class PreloginUI {
         if (result.authToken() != null && result.username() != null) {
             this.state = State.SIGNEDIN;
             this.authToken = result.authToken();
+            server.setAuthToken(this.authToken);
             this.username = result.username();
             return new CommandResult(true, "Registered as " + username + ".\n", true, false);
         } else {
+            server.setAuthToken(null);
             return new CommandResult (false, "Registration failed. Please try again.", false, false);
         }
     }
@@ -69,6 +71,7 @@ public class PreloginUI {
         if (result.authToken() != null && result.username() != null) {
             this.state = State.SIGNEDIN;
             this.authToken = result.authToken();
+            server.setAuthToken(this.authToken);
             this.username = result.username();
             return new CommandResult(true, "Logged in as " + username + ".\n", true, false);
         } else {
