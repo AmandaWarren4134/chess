@@ -2,7 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.*;
 import response.*;
 import request.*;
 
@@ -11,11 +10,11 @@ import java.net.*;
 
 public class ServerFacade {
 
-    private final String SERVER_URL;
+    private final String serverUrl;
     private String authToken;
 
     public ServerFacade(String url) {
-        SERVER_URL = url;
+        serverUrl = url;
     }
 
     public void setAuthToken(String token) {
@@ -56,12 +55,12 @@ public class ServerFacade {
     }
 
     public String getServerUrl() {
-        return SERVER_URL;
+        return serverUrl;
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
-            URL url = (new URI(SERVER_URL + path)).toURL();
+            URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
 

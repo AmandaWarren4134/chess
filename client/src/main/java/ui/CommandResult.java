@@ -19,7 +19,5 @@ public class CommandResult {
     }
 
     public String getMessage() {return message;}
-    public boolean isSuccess() {return success;}
-    public boolean goToPostLogin() { return goToPostLogin;}
     public boolean isQuit() {return quit;}
 }
