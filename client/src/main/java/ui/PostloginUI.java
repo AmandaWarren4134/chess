@@ -1,11 +1,18 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.List;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exception.ResponseException;
+import model.GameData;
 import request.*;
 import response.*;
 import server.ServerFacade;
+
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.BLACK;
 
 public class PostloginUI {
     private final ServerFacade server;
@@ -53,8 +60,17 @@ public class PostloginUI {
     private CommandResult list() throws ResponseException {
         var request = new ListRequest(authToken);
         ListResult result = server.list(request);
-
-        return new CommandResult(true, "Here are the current games: \n", false, false);
+        StringBuilder output = new StringBuilder("Here are the current games:\n");
+        List<GameData> games = result.games();
+        for (int i = 0; i < games.size(); i++) {
+            var game = games.get(i);
+            output.append(String.format("%d. %s (White: %s, Black: %s)\n",
+                    i + 1,
+                    game.gameName(),
+                    game.whiteUsername() != null ? game.whiteUsername() : "---",
+                    game.blackUsername() != null ? game.blackUsername() : "---"));
+        }
+        return new CommandResult(true, output.toString(), false, false);
     }
 
     private CommandResult create(String[] params) throws ResponseException {
@@ -75,8 +91,52 @@ public class PostloginUI {
     private CommandResult join(String[] params) throws ResponseException {
         if (params.length != 2) {
             return new CommandResult(false, "Usage: join <id> [WHITE|BLACK]", false, false);
-
         }
+
+        int gameID;
+        try {
+            gameID = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return new CommandResult(false, "Game ID must be a number.", false, false);
+        }
+
+        ChessGame.TeamColor teamColor;
+        try {
+            teamColor = ChessGame.TeamColor.valueOf(params[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return new CommandResult(false, "Color must be WHITE or BLACK.", false, false);
+        }
+
+        var request = new JoinRequest(authToken, teamColor, gameID);
+        try {
+            server.join(request);
+            ChessBoard board = new ChessBoard();
+            ChessBoardPrinter printer = new ChessBoardPrinter();
+            printer.print(board, teamColor);
+
+            return new CommandResult(true, "Successfully joined game " + gameID + ".\n", false, false);
+        } catch (ResponseException e) {
+            return new CommandResult(false, e.getMessage(), false, false);
+        }
+    }
+
+    private CommandResult observe(String [] params) throws ResponseException {
+        if (params.length != 1) {
+            return new CommandResult(false, "Usage: observe <id>", false, false);
+        }
+
+        int gameID;
+        try {
+            gameID = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return new CommandResult(false, "Game ID must be a number.", false, false);
+        }
+
+        ChessBoard board = new ChessBoard();
+        ChessBoardPrinter printer = new ChessBoardPrinter();
+        printer.print(board, WHITE);
+
+        return new CommandResult(true, "Displaying game " + gameID + ".\n", false, false);
     }
 
     public CommandResult help() {
@@ -89,5 +149,9 @@ public class PostloginUI {
                 - quit - quit playing chess
                 - help - get information about possible commands
                 """, false, false);
+    }
+
+    public boolean isSignedOut() {
+        return state == State.SIGNEDOUT;
     }
 }

@@ -22,8 +22,8 @@ public class Repl {
 
         while (true) {
             System.out.print(">>> ");
-            var input = scanner.nextLine();
-            result = prelogin.eval(input);
+            var preInput = scanner.nextLine();
+            result = prelogin.eval(preInput);
             System.out.println(result.getMessage());
 
             if (result.isQuit()) {
@@ -33,11 +33,23 @@ public class Repl {
 
             if (result.goToPostLogin) {
                 var postlogin = new PostloginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
-                result = postlogin.run(scanner);
+                while (true) {
+                    System.out.print(">>> ");
+                    var postInput = scanner.nextLine();
+                    result = postlogin.eval(postInput);
+                    System.out.println(result.getMessage());
 
-                if (!postlogin.isSignedIn()) {
-                    prelogin = new PreloginUI(server);
+                    if (result.isQuit()) {
+                        System.out.println("Goodbye!");
+                        break;
+                    }
+
+                    if (postlogin.isSignedOut()) {
+                        break;
+                    }
                 }
+
+
             }
 
         }
