@@ -29,7 +29,7 @@ public class Repl {
                 break;
             }
 
-            if (result.goToPostLogin) {
+            if (result.goForward) {
                 var postlogin = new PostLoginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
                 while (true) {
                     System.out.print(">>> ");
@@ -44,6 +44,10 @@ public class Repl {
 
                     if (postlogin.isSignedOut()) {
                         break;
+                    }
+
+                    if (result.goForward) {
+                        var gameplay = new GameplayUI(server, )
                     }
                 }
 

@@ -4,6 +4,9 @@ import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static chess.ChessGame.TeamColor.WHITE;
 import static ui.EscapeSequences.*;
@@ -15,6 +18,9 @@ public class ChessBoardPrinter {
     private static final String [] ROW_LABELS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
     public void print(ChessBoard board, ChessGame.TeamColor perspective) {
+        print(board, perspective, null);
+    }
+    public void print(ChessBoard board, ChessGame.TeamColor perspective, Collection<ChessMove> validMoves) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
@@ -32,6 +38,10 @@ public class ChessBoardPrinter {
 
         drawHeaders(out, perspective);
 
+        Set<ChessPosition> validPositions = validMoves.stream()
+                .map(ChessMove::getEndPosition)
+                .collect(Collectors.toSet());
+
         for (int row = rowStart; row != rowEnd; row += rowStep) {
             // left-side row label
             resetColors(out);
@@ -42,10 +52,15 @@ public class ChessBoardPrinter {
                 for (int col = colStart; col != colEnd; col += colStep) {
                     ChessPiece currentPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
 
-
-
                     boolean isDark = (row + col) % 2 == 0;
-                    if (isDark) {
+                    ChessPosition pos = new ChessPosition(row, col);
+                    if (validPositions.contains(pos) && isDark) {
+                        setDarkHighlight(out);
+                    }
+                    else if (validPositions.contains(pos)) {
+                        setLightHighlight(out);
+                    }
+                    else if (isDark) {
                         setDarkSquare(out);
                     } else {
                         setLightSquare(out);
@@ -133,8 +148,18 @@ public class ChessBoardPrinter {
     }
 
     private static void setDarkSquare(PrintStream out) {
-        out.print(SET_BG_COLOR_DARK_GREEN);
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
+    }
+
+    private static void setDarkHighlight(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREEN);
+        out.print(SET_TEXT_COLOR_YELLOW);
+    }
+
+    private static void setLightHighlight(PrintStream out) {
+        out.print(SET_BG_COLOR_GREEN);
+        out.print(SET_TEXT_COLOR_YELLOW);
     }
 
     private static void resetColors(PrintStream out) {
