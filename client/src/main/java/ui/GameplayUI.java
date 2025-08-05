@@ -8,6 +8,9 @@ import chess.*;
 import java.util.Arrays;
 import java.util.Collection;
 
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 public class GameplayUI implements websocket.ServerMessageObserver {
@@ -92,15 +95,21 @@ public class GameplayUI implements websocket.ServerMessageObserver {
     }
 
     @Override
-    public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case LOAD_GAME -> handleLoadGame(message);
-            case NOTIFICATION -> System.out.println("[Notification] " + message.getMessage());
-            case ERROR -> System.out.println("[Error] " + message.getErrorMessage());
-        }
+    public void notify(LoadGameMessage message) {
+
     }
 
-    private void handleLoadGame(ServerMessage message) {
+    private void handleLoadGame(LoadGameMessage message) {
         // use the game field in the message to update and draw the board
+    }
+
+    @Override
+    public void notify(NotificationMessage message) {
+
+    }
+
+    @Override
+    public void notify(ErrorMessage message) {
+
     }
 }

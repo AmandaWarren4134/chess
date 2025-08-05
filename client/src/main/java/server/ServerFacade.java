@@ -15,11 +15,11 @@ public class ServerFacade {
 
     private final String serverUrl;
     private String authToken;
-    private WebSocketCommunicator ws;
+    private WebSocketCommunicator communicator;
 
     public ServerFacade(String url, ServerMessageObserver observer) throws Exception {
         this.serverUrl = url;
-        this.ws = new WebSocketCommunicator(url, observer);
+        this.communicator = new WebSocketCommunicator(url, observer);
     }
 
     public void setAuthToken(String token) {
@@ -130,10 +130,10 @@ public class ServerFacade {
     }
 
     public void sendGameCommand(UserGameCommand command) throws Exception {
-        ws.send(command);
+        communicator.send(command);
     }
 
     public void closeWebSocket() throws Exception {
-        ws.close();
+        communicator.close();
     }
 }

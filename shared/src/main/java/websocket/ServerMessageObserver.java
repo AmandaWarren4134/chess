@@ -1,10 +1,9 @@
 package websocket;
 
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 public interface ServerMessageObserver {
-    void notify(ServerMessage message);
-//    void notify(LoadGameMessage message);
-//    void notify(NotificationMessage message);
-//    void notify(ErrorMessage message);
+    void notify(LoadGameMessage message);
+    void notify(NotificationMessage message);
+    void notify(ErrorMessage message);
 }

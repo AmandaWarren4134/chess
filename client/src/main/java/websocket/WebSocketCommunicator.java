@@ -3,7 +3,7 @@ package websocket;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class WebSocketCommunicator extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
                     observer.notify(notification);
                 }
             });

@@ -13,7 +13,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -53,16 +53,48 @@ public class WebSocketHandler {
         // Validate the request
         String username;
         GameData gameData;
+
         try {
             AuthData authData = authDAO.getAuth(authToken);
             username = authData.username();
             gameData = gameDAO.getGame(gameID);
         } catch (DataAccessException ex){
-            throw new IOException("Error: Unable to validate the connect request.");
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            return;
         }
+
+        // Register connection
         connections.add(authToken, session, gameID);
-        ServerMessage loadMessage = new ServerMessage(LOAD_GAME);
-        loadMessage.
+
+        // Send LOAD_GAME to client
+        LoadGameMessage gameMessage = new LoadGameMessage(gameData);
+        session.getRemote().sendString(new Gson().toJson(gameMessage));
+
+        // Determine player team or if observer
+        NotificationMessage notification = getNotificationMessage(username, gameData);
+        connections.broadcast(gameID, notification);
+    }
+
+    private static NotificationMessage getNotificationMessage(String username, GameData gameData) {
+        String team;
+        if (username.equals(gameData.whiteUsername())) {
+            team = "WHITE";
+        } else if (username.equals(gameData.blackUsername())) {
+            team = "BLACK";
+        } else {
+            team = "OBSERVER";
+        }
+
+        // Notify other clients
+        String notificationText;
+        if (team.equals("OBSERVER")) {
+            notificationText = username + "joined the game as an observer.";
+        } else {
+            notificationText = username + "joined the game as " + team + ".";
+        }
+
+        return new NotificationMessage(notificationText);
     }
 
     private void move() throws IOException {
