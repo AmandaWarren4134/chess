@@ -8,6 +8,7 @@ import response.*;
 import exception.*;
 import server.Server;
 import server.ServerFacade;
+import websocket.ServerMessageObserver;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -22,12 +23,13 @@ public class ServerFacadeTests {
     private static Server server;
     private static ServerFacade facade;
     private static String existingAuthToken;
+    private static ServerMessageObserver observer;
 
     @BeforeAll
-    public static void init() {
+    public static void init() throws Exception {
         server = new Server();
         var port = server.run(0);
-        facade = new ServerFacade("http://localhost:" + port);
+        facade = new ServerFacade("http://localhost:" + port, observer);
         System.out.println("Started test HTTP server on " + port);
     }
 

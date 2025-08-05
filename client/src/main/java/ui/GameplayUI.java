@@ -8,7 +8,9 @@ import chess.*;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class GameplayUI {
+import websocket.messages.ServerMessage;
+
+public class GameplayUI implements websocket.ServerMessageObserver {
     private final ServerFacade server;
     private String authToken;
     private String username;
@@ -16,36 +18,37 @@ public class GameplayUI {
     private State state;
     private ChessGame game;
 
-    public GameplayUI(ServerFacade server, String authToken, String username, ChessGame.TeamColor perspective, GameData currentGame) {
+    public GameplayUI(ServerFacade server, String authToken, String username, ChessGame.TeamColor perspective) {
         this.server = server;
         this.authToken = authToken;
         this.username = username;
         this.state = State.SIGNEDIN;
-        this.game = currentGame.game();
         this.perspective = perspective;
 
         this.server.setAuthToken(authToken);
     }
 
-    public CommandResult eval(String input) throws ResponseException {
+    public CommandResult eval(String input) {
         try {
             input = input.trim();
             var tokens = input.split("\\s+");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "redraw" -> redraw();
-                case "leave" -> leave();
-                case "move" -> move(params);
-                case "resign" -> resign();
+//                case "redraw" -> redraw();
+//                case "leave" -> leave();
+//                case "move" -> move(params);
+//                case "resign" -> resign();
                 case "highlight" -> highlight(params);
                 case "help" -> help();
                 case "quit" -> new CommandResult(true, "Exiting back to main menu...", false, true);
                 default -> new CommandResult(false, "Unknown command, type \"help\" to see more commands.", false, false);
-            }
+            };
+        } catch (Exception e) {
+            return new CommandResult(false, "Error processing command: " + e.getMessage(), false, false);
         }
     }
-    public CommandResult highlight(String [] params) throws ResponseException {
+    public CommandResult highlight(String [] params) {
         if (params.length != 1) {
             return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
         }
@@ -57,7 +60,7 @@ public class GameplayUI {
         Collection<ChessMove> validMoves = game.validMoves(startPosition);
 
         ChessBoardPrinter printer = new ChessBoardPrinter();
-        printer.print(game.getBoard(), game.)
+        return new CommandResult(true, "Not implemented", false, false);
     }
 
     private ChessPosition translateToChessPosition(String startSquare) {
@@ -86,5 +89,18 @@ public class GameplayUI {
                 - quit - quit playing chess
                 - help - get information about possible commands
                 """, false, false);
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> handleLoadGame(message);
+            case NOTIFICATION -> System.out.println("[Notification] " + message.getMessage());
+            case ERROR -> System.out.println("[Error] " + message.getErrorMessage());
+        }
+    }
+
+    private void handleLoadGame(ServerMessage message) {
+        // use the game field in the message to update and draw the board
     }
 }

@@ -51,7 +51,7 @@ public class PreLoginUI {
             this.authToken = result.authToken();
             server.setAuthToken(this.authToken);
             this.username = result.username();
-            return new CommandResult(true, "Registered as " + username + ".\n", true, false);
+            return new CommandResult(true, "Registered as " + username + ".\n", true, false, authToken, username);
         } else {
             server.setAuthToken(null);
             return new CommandResult (false, "Registration failed. Please try again.", false, false);
@@ -73,7 +73,7 @@ public class PreLoginUI {
             this.authToken = result.authToken();
             server.setAuthToken(this.authToken);
             this.username = result.username();
-            return new CommandResult(true, "Logged in as " + username + ".\n", true, false);
+            return new CommandResult(true, "Logged in as " + username + ".\n", true, false, authToken, username);
         } else {
             return new CommandResult(false, "Login failed. Please try again.", false, false);
         }
@@ -92,11 +92,4 @@ public class PreLoginUI {
         return state == State.SIGNEDIN;
     }
 
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public String getUsername() {
-        return username;
-    }
 }

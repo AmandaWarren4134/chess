@@ -131,7 +131,7 @@ public class PostLoginUI {
 //            ChessBoardPrinter printer = new ChessBoardPrinter();
 //            printer.print(board, teamColor);
 
-            return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false);
+            return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false, authToken, username);
         } catch (ResponseException e) {
             return new CommandResult(false, e.getMessage(), false, false);
         }
@@ -175,19 +175,8 @@ public class PostLoginUI {
         return state == State.SIGNEDOUT;
     }
 
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public String getUsername() {
-        return username;
-    }
 
     public ChessGame.TeamColor getTeamColor() {
         return teamColor;
-    }
-
-    public GameData getGameData() {
-        return gameData;
     }
 }

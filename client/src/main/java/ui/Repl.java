@@ -1,6 +1,7 @@
 package ui;
 
 import server.ServerFacade;
+import websocket.ServerMessageObserver;
 
 import java.util.Scanner;
 
@@ -9,9 +10,9 @@ public class Repl {
     private final ServerFacade server;
     private final Scanner scanner = new Scanner(System.in);
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl, ServerMessageObserver observer) throws Exception {
         this.serverUrl = serverUrl;
-        this.server = new ServerFacade(serverUrl);
+        this.server = new ServerFacade(serverUrl, observer);
     }
 
     public void run() {
@@ -30,7 +31,7 @@ public class Repl {
             }
 
             if (result.goForward) {
-                var postLogin = new PostLoginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
+                var postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
                 while (true) {
                     System.out.print(">>> ");
                     var postInput = scanner.nextLine();
@@ -47,7 +48,18 @@ public class Repl {
                     }
 
                     if (result.goForward) {
-                        var gameplay = new GameplayUI(server, postLogin.getAuthToken(), postLogin.getUsername(), postLogin.getTeamColor(), postLogin.getGameData());
+                        var gameplay = new GameplayUI(server, result.getAuthToken(), result.getUsername(), postLogin.getTeamColor());
+                        while (true) {
+                            System.out.print(">>> ");
+                            var gameInput = scanner.nextLine();
+                            result = gameplay.eval(gameInput);
+                            System.out.println(result.getMessage());
+
+                            if (result.isQuit()) {
+                                System.out.println("Goodbye!");
+                                break;
+                            }
+                        }
                     }
                 }
 

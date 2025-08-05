@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import response.*;
 import request.*;
+import websocket.ServerMessageObserver;
+import websocket.WebSocketCommunicator;
+import websocket.commands.UserGameCommand;
 
 import java.io.*;
 import java.net.*;
@@ -12,9 +15,11 @@ public class ServerFacade {
 
     private final String serverUrl;
     private String authToken;
+    private WebSocketCommunicator ws;
 
-    public ServerFacade(String url) {
-        serverUrl = url;
+    public ServerFacade(String url, ServerMessageObserver observer) throws Exception {
+        this.serverUrl = url;
+        this.ws = new WebSocketCommunicator(url, observer);
     }
 
     public void setAuthToken(String token) {
@@ -122,5 +127,13 @@ public class ServerFacade {
 
     private boolean isSuccessful (int status) {
         return status / 100 == 2;
+    }
+
+    public void sendGameCommand(UserGameCommand command) throws Exception {
+        ws.send(command);
+    }
+
+    public void closeWebSocket() throws Exception {
+        ws.close();
     }
 }

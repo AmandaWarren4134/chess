@@ -15,16 +15,23 @@ public class ConnectionManager {
     // Map of gameID to set of authTokens for players
     private final ConcurrentHashMap<Integer, Set<String>> gameConnections = new ConcurrentHashMap<>();
 
+    // Map from session to authToken
+    private final ConcurrentHashMap<Session, String> sessionToAuthToken = new ConcurrentHashMap<>();
+
     public void add(String authToken, Session session, int gameID) {
         var connection = new Connection(authToken, session);
         connections.put(authToken, connection);
         gameConnections.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet()).add(authToken);
+        sessionToAuthToken.put(session, authToken);
     }
 
-    public void remove(String authToken) {
-        connections.remove(authToken);
-        for (Set<String> auths : gameConnections.values()) {
-            auths.remove(authToken);
+    public void remove(Session session) {
+        String authToken = sessionToAuthToken.remove(session);
+        if (authToken != null) {
+            connections.remove(authToken);
+            for (Set<String> auths : gameConnections.values()) {
+                auths.remove(authToken);
+            }
         }
     }
 
