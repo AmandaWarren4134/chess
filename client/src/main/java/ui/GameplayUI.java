@@ -12,15 +12,17 @@ public class GameplayUI {
     private final ServerFacade server;
     private String authToken;
     private String username;
+    private ChessGame.TeamColor perspective;
     private State state;
     private ChessGame game;
 
-    public GameplayUI(ServerFacade server, String authToken, String username, GameData currentGame) {
+    public GameplayUI(ServerFacade server, String authToken, String username, ChessGame.TeamColor perspective, GameData currentGame) {
         this.server = server;
         this.authToken = authToken;
         this.username = username;
         this.state = State.SIGNEDIN;
         this.game = currentGame.game();
+        this.perspective = perspective;
 
         this.server.setAuthToken(authToken);
     }
@@ -54,6 +56,8 @@ public class GameplayUI {
         ChessGame currentGame = game;
         Collection<ChessMove> validMoves = game.validMoves(startPosition);
 
+        ChessBoardPrinter printer = new ChessBoardPrinter();
+        printer.print(game.getBoard(), game.)
     }
 
     private ChessPosition translateToChessPosition(String startSquare) {

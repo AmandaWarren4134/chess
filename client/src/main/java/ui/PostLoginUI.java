@@ -17,6 +17,7 @@ public class PostLoginUI {
     private final ServerFacade server;
     private String authToken;
     private String username;
+    private ChessGame.TeamColor teamColor;
     private State state;
     private ArrayList<GameData> lastGameList = new ArrayList<>();
 
@@ -120,11 +121,15 @@ public class PostLoginUI {
 
         var request = new JoinRequest(authToken, teamColor, gameID);
         try {
+            // Call the server join HTTP API to join the game
             server.join(request);
-            ChessBoard board = new ChessBoard();
-            board.resetBoard();
-            ChessBoardPrinter printer = new ChessBoardPrinter();
-            printer.print(board, teamColor);
+            // Open a WebSocket connection with the server
+            // Send a CONNECT WebSocket message to the server
+            // Transition to gameplay UI
+//            ChessBoard board = new ChessBoard();
+//            board.resetBoard();
+//            ChessBoardPrinter printer = new ChessBoardPrinter();
+//            printer.print(board, teamColor);
 
             return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false);
         } catch (ResponseException e) {
@@ -143,11 +148,13 @@ public class PostLoginUI {
         } catch (NumberFormatException e) {
             return new CommandResult(false, "Game ID must be a number.", false, false);
         }
-
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        ChessBoardPrinter printer = new ChessBoardPrinter();
-        printer.print(board, WHITE);
+        // Open a WebSocket connection with the server
+        // Send a CONNECT WebSocket message to the server
+        // Transition to gameplay UI
+//        ChessBoard board = new ChessBoard();
+//        board.resetBoard();
+//        ChessBoardPrinter printer = new ChessBoardPrinter();
+//        printer.print(board, WHITE);
 
         return new CommandResult(true, "Displaying game " + gameID + ".\n", false, false);
     }
@@ -166,5 +173,21 @@ public class PostLoginUI {
 
     public boolean isSignedOut() {
         return state == State.SIGNEDOUT;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public ChessGame.TeamColor getTeamColor() {
+        return teamColor;
+    }
+
+    public GameData getGameData() {
+        return gameData;
     }
 }

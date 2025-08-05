@@ -8,6 +8,9 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+
 public class Server {
 
     public int run(int desiredPort) {
@@ -57,6 +60,9 @@ public class Server {
         Spark.post("/game", createHandler);
         Spark.put("/game", joinHandler);
         Spark.delete("/db", clearHandler);
+
+        // Register WebSocket endpoint
+        Spark.webSocket("/ws", server.websocket.WebSocketHandler.class);
 
         Spark.awaitInitialization();
         return Spark.port();

@@ -15,13 +15,13 @@ public class Repl {
     }
 
     public void run() {
-        var prelogin = new PreLoginUI(server);
+        var preLogin = new PreLoginUI(server);
         CommandResult result;
 
         while (true) {
             System.out.print(">>> ");
             var preInput = scanner.nextLine();
-            result = prelogin.eval(preInput);
+            result = preLogin.eval(preInput);
             System.out.println(result.getMessage());
 
             if (result.isQuit()) {
@@ -30,11 +30,11 @@ public class Repl {
             }
 
             if (result.goForward) {
-                var postlogin = new PostLoginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
+                var postLogin = new PostLoginUI(server, prelogin.getAuthToken(), prelogin.getUsername());
                 while (true) {
                     System.out.print(">>> ");
                     var postInput = scanner.nextLine();
-                    result = postlogin.eval(postInput);
+                    result = postLogin.eval(postInput);
                     System.out.println(result.getMessage());
 
                     if (result.isQuit()) {
@@ -42,12 +42,12 @@ public class Repl {
                         break;
                     }
 
-                    if (postlogin.isSignedOut()) {
+                    if (postLogin.isSignedOut()) {
                         break;
                     }
 
                     if (result.goForward) {
-                        var gameplay = new GameplayUI(server, )
+                        var gameplay = new GameplayUI(server, postLogin.getAuthToken(), postLogin.getUsername(), postLogin.getTeamColor(), postLogin.getGameData());
                     }
                 }
 
