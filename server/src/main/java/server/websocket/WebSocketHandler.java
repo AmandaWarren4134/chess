@@ -241,7 +241,7 @@ public class WebSocketHandler {
         // Validate that the user is a player
         if (!username.equals(gameData.whiteUsername()) &&
                 !username.equals(gameData.blackUsername()) ) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot resign if you are nota  player.");
+            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot resign if you are not a player.");
             session.getRemote().sendString(new Gson().toJson(errorMessage) + ".");
             return;
         }
@@ -260,7 +260,7 @@ public class WebSocketHandler {
         }
 
         // Notify all clients
-        String resignText = username + " left the game.";
+        String resignText = username + " resigned from the game.";
         NotificationMessage resignMessage = new NotificationMessage(resignText);
         connections.broadcast(gameID, resignMessage);
 

@@ -134,7 +134,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if (isGameOver) {
-            throw new InvalidMoveException("Cannot make a move: the game is over.");
+            throw new InvalidMoveException("Error: Cannot make a move, the game is over.");
         }
         ChessPiece piece = myBoard.getPiece(move.getStartPosition());
         if (piece == null) {
