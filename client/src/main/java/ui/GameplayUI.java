@@ -17,11 +17,11 @@ import websocket.messages.ServerMessage;
 
 public class GameplayUI implements websocket.ServerMessageObserver {
     private ServerFacade server;
-    private String authToken;
+    private final String authToken;
     private String username;
-    private Integer gameID;
-    private ChessGame.TeamColor perspective;
-    private State state;
+    private final Integer gameID;
+    private final ChessGame.TeamColor perspective;
+    private final State state;
     private ChessGame game;
 
     public GameplayUI(ServerFacade server, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) {
@@ -115,14 +115,22 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
         }
 
-        String startSquare = params[0];
-        ChessPosition startPosition = translateToChessPosition(startSquare);
+        try {
+            ChessPosition startPosition = translateToChessPosition(params[0]);
+            Collection<ChessMove> validMoves = game.validMoves(startPosition);
 
-        ChessGame currentGame = game;
-        Collection<ChessMove> validMoves = game.validMoves(startPosition);
+            if (validMoves == null || validMoves.isEmpty()) {
+                return new CommandResult(true, "No valid moves from " + params[0] + " to " + params[1], false, false);
+            } else {
+                ChessBoard board = game.getBoard();
 
-        ChessBoardPrinter printer = new ChessBoardPrinter();
-        return new CommandResult(true, "Not implemented", false, false);
+                ChessBoardPrinter printer = new ChessBoardPrinter();
+                printer.print(board, perspective, validMoves);
+                return new CommandResult(true, "", false, false);
+            }
+        } catch (Exception e) {
+            return new CommandResult(false, "Error: " + e.getMessage(), false, false);
+        }
     }
 
     private ChessPosition translateToChessPosition(String startSquare) {
