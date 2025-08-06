@@ -62,7 +62,7 @@ public class Server {
         Spark.delete("/db", clearHandler);
 
         // Register WebSocket endpoint
-        Spark.webSocket("/ws", server.websocket.WebSocketHandlerWrapper.class);
+        Spark.webSocket("/ws", WebSocketHandler.class);
 
         Spark.awaitInitialization();
         return Spark.port();
