@@ -1,7 +1,7 @@
 package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
-//import webSocketMessages.Notification;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.*;
@@ -15,34 +15,19 @@ public class ConnectionManager {
     // Map of gameID to set of authTokens for players
     private final ConcurrentHashMap<Integer, Set<String>> gameConnections = new ConcurrentHashMap<>();
 
-    // Map from session to authToken
-    private final ConcurrentHashMap<Session, String> sessionToAuthToken = new ConcurrentHashMap<>();
+    private final Gson gson = new Gson();
 
     public void add(String authToken, Session session, int gameID) {
         var connection = new Connection(authToken, session);
         connections.put(authToken, connection);
         gameConnections.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet()).add(authToken);
-        sessionToAuthToken.put(session, authToken);
     }
 
-    public void remove(Session session) {
-        String authToken = sessionToAuthToken.remove(session);
-        if (authToken != null) {
-            connections.remove(authToken);
-            for (Set<String> auths : gameConnections.values()) {
-                auths.remove(authToken);
-            }
-        }
-        // TODO: fix so that empty sets are deleted
-    }
-
-    public Session getSession(String authToken) {
-        var connection  = connections.get(authToken);
-        return connection != null ? connection.session : null;
+    public void remove(String authToken) {
+        connections.remove(authToken);
     }
 
     public void broadcast(int gameID, Object message) throws IOException {
-        var gson = new com.google.gson.Gson();
         String json = gson.toJson(message);
 
         Set<String> recipients = gameConnections.get(gameID);
@@ -57,7 +42,6 @@ public class ConnectionManager {
     }
 
     public void broadcastExcept(String excludedAuthToken, int gameID, Object message) throws IOException {
-        var gson = new com.google.gson.Gson();
         String json = gson.toJson(message);
 
         Set<String> recipients = gameConnections.get(gameID);
