@@ -15,7 +15,7 @@ public class ServerFacade {
 
     private final String serverUrl;
     private String authToken;
-    private WebSocketCommunicator communicator;
+    private final WebSocketCommunicator communicator;
 
     public ServerFacade(String url, ServerMessageObserver observer) throws Exception {
         this.serverUrl = url;

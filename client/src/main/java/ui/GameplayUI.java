@@ -21,17 +21,15 @@ public class GameplayUI implements websocket.ServerMessageObserver {
     private String username;
     private final Integer gameID;
     private final ChessGame.TeamColor perspective;
-    private final State state;
     private ChessGame game;
 
-    public GameplayUI(ServerFacade server, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) {
-        this.server = server;
+    public GameplayUI(String serverUrl, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) throws Exception {
         this.authToken = authToken;
         this.username = username;
         this.gameID = gameID;
-        this.state = State.SIGNEDIN;
         this.perspective = perspective;
 
+        this.server = new ServerFacade(serverUrl, this);
         this.server.setAuthToken(authToken);
     }
 
@@ -120,7 +118,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             Collection<ChessMove> validMoves = game.validMoves(startPosition);
 
             if (validMoves == null || validMoves.isEmpty()) {
-                return new CommandResult(true, "No valid moves from " + params[0] + " to " + params[1], false, false);
+                return new CommandResult(true, "No valid moves from " + params[0], false, false);
             } else {
                 ChessBoard board = game.getBoard();
 

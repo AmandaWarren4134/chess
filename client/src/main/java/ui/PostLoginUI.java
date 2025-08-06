@@ -123,15 +123,16 @@ public class PostLoginUI {
         try {
             // Call the server join HTTP API to join the game
             server.join(request);
-            // Open a WebSocket connection with the server
-            // Send a CONNECT WebSocket message to the server
-            // Transition to gameplay UI
-//            ChessBoard board = new ChessBoard();
-//            board.resetBoard();
-//            ChessBoardPrinter printer = new ChessBoardPrinter();
-//            printer.print(board, teamColor);
+            this.teamColor = teamColor;
 
-            return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false, authToken, username, gameID);
+            // Transition to gameplay UI
+            return new CommandResult(true,
+                    "Successfully joined game " + (gameNumber + 1) + " as " + teamColor + ".\n",
+                    true,
+                    false,
+                    authToken,
+                    username,
+                    gameID);
         } catch (ResponseException e) {
             return new CommandResult(false, e.getMessage(), false, false);
         }
@@ -142,21 +143,36 @@ public class PostLoginUI {
             return new CommandResult(false, "Usage: observe <id>", false, false);
         }
 
-        int gameID;
+        int gameNumber;
         try {
-            gameID = Integer.parseInt(params[0]);
+            gameNumber = Integer.parseInt(params[0]) - 1;
         } catch (NumberFormatException e) {
             return new CommandResult(false, "Game ID must be a number.", false, false);
         }
-        // Open a WebSocket connection with the server
-        // Send a CONNECT WebSocket message to the server
-        // Transition to gameplay UI
-//        ChessBoard board = new ChessBoard();
-//        board.resetBoard();
-//        ChessBoardPrinter printer = new ChessBoardPrinter();
-//        printer.print(board, WHITE);
 
-        return new CommandResult(true, "Displaying game " + gameID + ".\n", false, false);
+        if (gameNumber < 0 || gameNumber >= lastGameList.size()) {
+            return new CommandResult(false, "Invalid Game ID.", false, false);
+        }
+
+        int gameID = lastGameList.get(gameNumber).gameID();
+
+        // Transition to gameplay UI
+        try {
+            var request = new JoinRequest(authToken, null, gameID);
+            server.join(request);
+
+            return new CommandResult(
+                true,
+                "Joined game " + (gameNumber + 1) + " as an observer.\n",
+                true,
+                false,
+                authToken,
+                username,
+                gameID
+            );
+        } catch (ResponseException e) {
+            return new CommandResult(false, e.getMessage(), false, false);
+        }
     }
 
     public CommandResult help() {

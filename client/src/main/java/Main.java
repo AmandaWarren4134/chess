@@ -13,7 +13,11 @@ public class Main {
             serverUrl = args[0];
         }
 
-        new Repl(serverUrl).run();
+        try {
+            new Repl(serverUrl).run();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
 
     }
 }

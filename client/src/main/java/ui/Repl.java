@@ -2,12 +2,15 @@ package ui;
 
 import server.ServerFacade;
 import websocket.ServerMessageObserver;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 import java.util.Scanner;
 
 public class Repl {
     private final String serverUrl;
-    private ServerFacade server;
+    private ServerFacade server = new ServerFacade("http://localhost:8080", null);
     private final Scanner scanner = new Scanner(System.in);
 
     public Repl(String serverUrl) throws Exception {
@@ -30,7 +33,8 @@ public class Repl {
             }
 
             if (result.goForward) {
-                var gameplay = new GameplayUI(null, result.getAuthToken(), result.getUsername(), result.getGameID, null);
+                server = new ServerFacade(serverUrl, null);
+                var gameplay = new GameplayUI(serverUrl, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
                 server = new ServerFacade(serverUrl, gameplay);
                 gameplay.setServerFacade(server);
 
@@ -64,11 +68,7 @@ public class Repl {
                         }
                     }
                 }
-
-
             }
-
         }
-
     }
 }
