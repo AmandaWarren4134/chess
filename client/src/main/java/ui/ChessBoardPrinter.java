@@ -38,9 +38,12 @@ public class ChessBoardPrinter {
 
         drawHeaders(out, perspective);
 
-        Set<ChessPosition> validPositions = validMoves.stream()
+        Set<ChessPosition> validPositions = (validMoves != null)
+                ? validMoves.stream()
                 .map(ChessMove::getEndPosition)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet())
+                : Set.of();
+
 
         for (int row = rowStart; row != rowEnd; row += rowStep) {
             // left-side row label
@@ -53,7 +56,7 @@ public class ChessBoardPrinter {
                     ChessPiece currentPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
 
                     boolean isDark = (row + col) % 2 == 0;
-                    ChessPosition pos = new ChessPosition(row, col);
+                    ChessPosition pos = new ChessPosition(row + 1, col + 1);
                     if (validPositions.contains(pos) && isDark) {
                         setDarkHighlight(out);
                     }

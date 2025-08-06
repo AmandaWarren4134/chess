@@ -10,19 +10,23 @@ import model.GameData;
 import request.*;
 import response.*;
 import server.ServerFacade;
+import websocket.WebSocketFacade;
+import websocket.commands.ConnectCommand;
 
 import static chess.ChessGame.TeamColor.WHITE;
 
 public class PostLoginUI {
     private final ServerFacade server;
+    private final WebSocketFacade webSocket;
     private String authToken;
     private String username;
     private ChessGame.TeamColor teamColor;
     private State state;
     private ArrayList<GameData> lastGameList = new ArrayList<>();
 
-    public PostLoginUI(ServerFacade server, String authToken, String username) {
+    public PostLoginUI(ServerFacade server, WebSocketFacade webSocket, String authToken, String username) {
         this.server = server;
+        this.webSocket = webSocket;
         this.authToken = authToken;
         this.username = username;
         this.state = State.SIGNEDIN;
@@ -123,6 +127,10 @@ public class PostLoginUI {
         try {
             // Call the server join HTTP API to join the game
             server.join(request);
+
+            // Send CONNECT WebSocket message
+            ConnectCommand connect = new ConnectCommand(authToken, gameID);
+            webSocket.send(connect);
             this.teamColor = teamColor;
 
             // Transition to gameplay UI
@@ -156,11 +164,12 @@ public class PostLoginUI {
 
         int gameID = lastGameList.get(gameNumber).gameID();
 
-        // Transition to gameplay UI
-        try {
-            var request = new JoinRequest(authToken, null, gameID);
-            server.join(request);
+        // Send CONNECT WebSocket message
+        ConnectCommand connect = new ConnectCommand(authToken, gameID);
+        webSocket.send(connect);
+        this.teamColor = WHITE;
 
+        // Transition to gameplay UI
             return new CommandResult(
                 true,
                 "Joined game " + (gameNumber + 1) + " as an observer.\n",
@@ -170,9 +179,6 @@ public class PostLoginUI {
                 username,
                 gameID
             );
-        } catch (ResponseException e) {
-            return new CommandResult(false, e.getMessage(), false, false);
-        }
     }
 
     public CommandResult help() {

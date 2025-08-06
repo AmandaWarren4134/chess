@@ -24,6 +24,7 @@ public class GameplayUI {
     private final Integer gameID;
     private final ChessGame.TeamColor perspective;
     private ChessGame game;
+    private final ChessBoardPrinter printer = new ChessBoardPrinter();
 
     public GameplayUI(ServerFacade server, WebSocketFacade webSocket, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) throws Exception {
         this.authToken = authToken;
@@ -61,9 +62,7 @@ public class GameplayUI {
         if (game == null) {
             return new CommandResult(false, "No game to redraw yet.", false, false);
         }
-
-        ChessBoardPrinter printer = new ChessBoardPrinter();
-        printer.print(game.getBoard(), perspective);
+        drawChessBoard();
 
         return new CommandResult(true, "", false, false);
     }
@@ -119,10 +118,7 @@ public class GameplayUI {
             if (validMoves == null || validMoves.isEmpty()) {
                 return new CommandResult(true, "No valid moves from " + params[0], false, false);
             } else {
-                ChessBoard board = game.getBoard();
-
-                ChessBoardPrinter printer = new ChessBoardPrinter();
-                printer.print(board, perspective, validMoves);
+                printer.print(game.getBoard(), perspective, validMoves);
                 return new CommandResult(true, "", false, false);
             }
         } catch (Exception e) {
@@ -159,8 +155,22 @@ public class GameplayUI {
     }
 
     public void notify(LoadGameMessage message) {
-        this.game = message.getGame().game();
-        ChessBoardPrinter printer = new ChessBoardPrinter();
+
+        System.out.println("LoadGameMessage received");
+        if (message.getGame() == null) {
+            System.err.println("Warning: LoadGameMessage.getGame() is null");
+
+        } else {
+            this.game = message.getGame().game();
+            printer.print(game.getBoard(), perspective);
+        }
+    }
+
+    public void drawChessBoard() {
+        if (game == null) {
+            System.out.println("Game not loaded yet. Cannot draw board.");
+            return;
+        }
         printer.print(game.getBoard(), perspective);
     }
 }

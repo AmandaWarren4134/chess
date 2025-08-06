@@ -9,9 +9,6 @@ import websocket.messages.NotificationMessage;
 
 import java.util.Scanner;
 
-import static java.awt.Color.BLUE;
-import static java.awt.Color.RED;
-
 public class Repl implements ServerMessageObserver {
     private final String serverUrl;
     private ServerFacade server;
@@ -45,15 +42,13 @@ public class Repl implements ServerMessageObserver {
                     System.out.println(result.getMessage());
 
                     if (result.goForward) {
-                        postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
-
                         // Create WebSocketFacade
                         if (webSocket == null) {
                             webSocket = new WebSocketFacade(serverUrl, this);
                         }
 
+                        postLogin = new PostLoginUI(server, webSocket, result.getAuthToken(), result.getUsername());
                         menuState = State.POST_LOGIN;
-
                     }
                     if (result.isQuit()) {
                         System.out.println("Goodbye!");
@@ -88,6 +83,9 @@ public class Repl implements ServerMessageObserver {
                         System.out.println("Goodbye!");
                         return;
                     }
+                    if (result.goForward) {
+                        menuState = State.POST_LOGIN;
+                    }
                 }
             }
         }
@@ -104,11 +102,11 @@ public class Repl implements ServerMessageObserver {
 
     @Override
     public void notify(NotificationMessage message) {
-        System.out.println(BLUE + ">> " + message.getMessage());
+        System.out.println(">> " + message.getMessage());
     }
 
     @Override
     public void notify(ErrorMessage message) {
-        System.err.println(RED + "Error: " + message.getErrorMessage());
+        System.err.println("Error: " + message.getErrorMessage());
     }
 }
