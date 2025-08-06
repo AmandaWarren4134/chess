@@ -46,7 +46,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-//                case "redraw" -> redraw();
+                case "redraw" -> redraw();
                 case "leave" -> leave();
                 case "move" -> move(params);
                 case "resign" -> resign();
@@ -60,6 +60,26 @@ public class GameplayUI implements websocket.ServerMessageObserver {
         }
     }
 
+    private CommandResult redraw() {
+        if (game == null) {
+            return new CommandResult(false, "No game to redraw yet.", false, false);
+        }
+
+        ChessBoardPrinter printer = new ChessBoardPrinter();
+        printer.print(game.getBoard(), perspective);
+
+        return new CommandResult(true, "", false, false);
+    }
+
+    private CommandResult leave() {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            server.sendGameCommand(command);
+            return new CommandResult(true, "You have left the game.", false, true);
+        } catch (Exception e) {
+            return new CommandResult(false, "Error leaving game: " + e.getMessage(), false, false);
+        }
+    }
 
     public CommandResult move(String[] params) throws Exception {
         if (params.length != 2) {
@@ -79,6 +99,17 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             return new CommandResult(false, "Invalid move: " + e.getMessage(), false, false);
         }
     }
+
+    private CommandResult resign() {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+            server.sendGameCommand(command);
+            return new CommandResult(true, "You have resigned.", false, true);
+        } catch (Exception e){
+            return new CommandResult(false, "Error resigning from the game: " + e.getMessage(), false, false);
+        }
+    }
+
     public CommandResult highlight(String[] params) {
         if (params.length != 1) {
             return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
