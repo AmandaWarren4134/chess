@@ -23,13 +23,12 @@ public class ServerFacadeTests {
     private static Server server;
     private static ServerFacade facade;
     private static String existingAuthToken;
-    private static ServerMessageObserver observer;
 
     @BeforeAll
     public static void init() throws Exception {
         server = new Server();
         var port = server.run(0);
-        facade = new ServerFacade("http://localhost:" + port, observer);
+        facade = new ServerFacade("http://localhost:" + port);
         System.out.println("Started test HTTP server on " + port);
     }
 

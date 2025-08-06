@@ -29,7 +29,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
         this.gameID = gameID;
         this.perspective = perspective;
 
-        this.server = new ServerFacade(serverUrl, this);
+        this.server = new ServerFacade(serverUrl);
         this.server.setAuthToken(authToken);
     }
 
@@ -72,7 +72,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
     private CommandResult leave() {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
-            server.sendGameCommand(command);
+            server.send(command);
             return new CommandResult(true, "You have left the game.", false, true);
         } catch (Exception e) {
             return new CommandResult(false, "Error leaving game: " + e.getMessage(), false, false);

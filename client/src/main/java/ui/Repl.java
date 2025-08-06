@@ -1,6 +1,7 @@
 package ui;
 
 import server.ServerFacade;
+import websocket.WebSocketFacade;
 import websocket.ServerMessageObserver;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -8,37 +9,40 @@ import websocket.messages.NotificationMessage;
 
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements ServerMessageObserver {
     private final String serverUrl;
-    private ServerFacade server = new ServerFacade("http://localhost:8080", null);
+    private ServerFacade server;
+    private WebSocketFacade webSocket;
     private final Scanner scanner = new Scanner(System.in);
+
+    private PreLoginUI preLogin;
+    private PostLoginUI postLogin;
+    private GameplayUI gameplay;
 
     public Repl(String serverUrl) throws Exception {
         this.serverUrl = serverUrl;
+        this.server = new ServerFacade(serverUrl);
+        this.preLogin = new PreLoginUI(server);
     }
 
     public void run() throws Exception {
-        var preLogin = new PreLoginUI(server);
-        CommandResult result;
-
+        // preLogin menu loop
         while (true) {
             System.out.print(">>> ");
             var preInput = scanner.nextLine();
+            CommandResult result;
             result = preLogin.eval(preInput);
             System.out.println(result.getMessage());
 
-            if (result.isQuit()) {
-                System.out.println("Goodbye!");
-                break;
-            }
-
             if (result.goForward) {
-                server = new ServerFacade(serverUrl, null);
-                var gameplay = new GameplayUI(serverUrl, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
-                server = new ServerFacade(serverUrl, gameplay);
-                gameplay.setServerFacade(server);
+                // Enter postLogin menu loop
+                postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
 
-                var postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
+                // Create WebSocketFacade
+                if (webSocket == null) {
+                    webSocket = new WebSocketFacade(serverUrl, this);
+                }
+
                 while (true) {
                     System.out.print(">>> ");
                     var postInput = scanner.nextLine();
@@ -55,6 +59,8 @@ public class Repl {
                     }
 
                     if (result.goForward) {
+                        gameplay = new GameplayUI(serverUrl, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
+                        gameplay.setServerFacade(server);
                         while (true) {
                             System.out.print(">>> ");
                             var gameInput = scanner.nextLine();
@@ -69,6 +75,25 @@ public class Repl {
                     }
                 }
             }
+            if (result.isQuit()) {
+                System.out.println("Goodbye!");
+                break;
+            }
         }
+    }
+
+    @Override
+    public void notify(LoadGameMessage message) {
+
+    }
+
+    @Override
+    public void notify(NotificationMessage message) {
+
+    }
+
+    @Override
+    public void notify(ErrorMessage message) {
+
     }
 }

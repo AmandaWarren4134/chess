@@ -148,8 +148,8 @@ public class ChessBoardPrinter {
     }
 
     private static void setDarkSquare(PrintStream out) {
-        out.print(SET_BG_COLOR_DARK_GREY);
-        out.print(SET_TEXT_COLOR_WHITE);
+        out.print(SET_BG_COLOR_BLUE);
+        out.print(SET_TEXT_COLOR_BLACK);
     }
 
     private static void setDarkHighlight(PrintStream out) {

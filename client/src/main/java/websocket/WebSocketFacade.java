@@ -10,17 +10,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class WebSocketCommunicator extends Endpoint {
+public class WebSocketFacade extends Endpoint {
 
-    Session session;
-    ServerMessageObserver observer;
+    private final Session session;
+    private final ServerMessageObserver observer;
+    private final Gson gson = new Gson();
 
-    public WebSocketCommunicator(String url, ServerMessageObserver observer) throws ResponseException {
+    public WebSocketFacade(String url, ServerMessageObserver observer) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
             this.observer = observer;
 
+            // make connection with the server
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
@@ -28,9 +30,9 @@ public class WebSocketCommunicator extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String messageJson) {
-                    Gson gson = new Gson();
                     ServerMessage baseMessage = gson.fromJson(messageJson, ServerMessage.class);
 
+                    // pass the message from the server to the repl
                     switch (baseMessage.getServerMessageType()) {
                         case LOAD_GAME -> {
                             LoadGameMessage loadMsg = gson.fromJson(messageJson, LoadGameMessage.class);
@@ -57,18 +59,5 @@ public class WebSocketCommunicator extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
 
-    }
-
-    public void send(UserGameCommand command) throws ResponseException {
-        try {
-            String json = new Gson().toJson(command);
-            session.getBasicRemote().sendText(json);
-        } catch (IOException ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
-
-    public void close() throws IOException {
-        session.close();
     }
 }
