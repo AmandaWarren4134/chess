@@ -174,14 +174,14 @@ public class WebSocketHandler {
             connections.broadcast(gameID, check);
         }
         if (game.isInCheckmate(game.getTeamTurn())) {
-            String checkText = game.getTeamTurn() + " is in checkmate.";
-            NotificationMessage check = new NotificationMessage(checkText);
-            connections.broadcast(gameID, check);
+            String checkmateText = game.getTeamTurn() + " is in checkmate.";
+            NotificationMessage checkmate = new NotificationMessage(checkmateText);
+            connections.broadcast(gameID, checkmate);
         }
         if (game.isInStalemate(game.getTeamTurn())) {
-            String checkText = "The game is at a stalemate";
-            NotificationMessage check = new NotificationMessage(checkText);
-            connections.broadcast(gameID, check);
+            String stalemateText = "The game is at a stalemate";
+            NotificationMessage stalemate = new NotificationMessage(stalemateText);
+            connections.broadcast(gameID, stalemate);
         }
     }
 
@@ -189,6 +189,39 @@ public class WebSocketHandler {
         String username;
         GameData gameData;
 
+        try {
+            AuthData authData = authDAO.getAuth(authToken);
+            username = authData.username();
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException ex){
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            return;
+        }
+
+        // If the user is a player, update GameData
+        if (username.equals(gameData.whiteUsername()) ||
+                username.equals(gameData.blackUsername()) ) {
+            // Update game
+            gameData = gameData.update(null, getPlayerColor(username, gameData), gameData.game());
+
+            // Persist updated game
+            try {
+                gameDAO.updateGame(gameData.gameID(), gameData);
+            } catch (DataAccessException e) {
+                ErrorMessage errorMessage = new ErrorMessage("Error: " + e.getMessage());
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+                return;
+            }
+        }
+
+        // Remove the user from WebSocket connections
+        connections.remove(session);
+
+        // Notify all other clients
+        String leaveText = username + " left the game.";
+        NotificationMessage leaveMessage = new NotificationMessage(leaveText);
+        connections.broadcast(gameID, leaveMessage);
     }
 
     private void resign() throws IOException {

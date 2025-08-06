@@ -33,6 +33,7 @@ public class ConnectionManager {
                 auths.remove(authToken);
             }
         }
+        // TODO: fix so that empty sets are deleted
     }
 
     public Session getSession(String authToken) {
