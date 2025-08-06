@@ -8,27 +8,35 @@ import chess.*;
 import java.util.Arrays;
 import java.util.Collection;
 
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 public class GameplayUI implements websocket.ServerMessageObserver {
-    private final ServerFacade server;
+    private ServerFacade server;
     private String authToken;
     private String username;
+    private Integer gameID;
     private ChessGame.TeamColor perspective;
     private State state;
     private ChessGame game;
 
-    public GameplayUI(ServerFacade server, String authToken, String username, ChessGame.TeamColor perspective) {
+    public GameplayUI(ServerFacade server, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) {
         this.server = server;
         this.authToken = authToken;
         this.username = username;
+        this.gameID = gameID;
         this.state = State.SIGNEDIN;
         this.perspective = perspective;
 
         this.server.setAuthToken(authToken);
+    }
+
+    public void setServerFacade(ServerFacade server) {
+        this.server = server;
     }
 
     public CommandResult eval(String input) {
@@ -39,9 +47,9 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
 //                case "redraw" -> redraw();
-//                case "leave" -> leave();
-//                case "move" -> move(params);
-//                case "resign" -> resign();
+                case "leave" -> leave();
+                case "move" -> move(params);
+                case "resign" -> resign();
                 case "highlight" -> highlight(params);
                 case "help" -> help();
                 case "quit" -> new CommandResult(true, "Exiting back to main menu...", false, true);
@@ -51,7 +59,27 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             return new CommandResult(false, "Error processing command: " + e.getMessage(), false, false);
         }
     }
-    public CommandResult highlight(String [] params) {
+
+
+    public CommandResult move(String[] params) throws Exception {
+        if (params.length != 2) {
+            return new CommandResult(false, "Usage: move <startPosition> <endPosition>", false, false);
+        }
+
+        try {
+            ChessPosition start = translateToChessPosition(params[0]);
+            ChessPosition end = translateToChessPosition(params[1]);
+            ChessMove move = new ChessMove(start, end, null);
+
+            MakeMoveCommand command = new MakeMoveCommand(authToken, gameID, move);
+            server.sendGameCommand(command);
+
+            return new CommandResult(true, "Move sent. Waiting for server validation.", false, false);
+        } catch (Exception e) {
+            return new CommandResult(false, "Invalid move: " + e.getMessage(), false, false);
+        }
+    }
+    public CommandResult highlight(String[] params) {
         if (params.length != 1) {
             return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
         }
@@ -96,20 +124,18 @@ public class GameplayUI implements websocket.ServerMessageObserver {
 
     @Override
     public void notify(LoadGameMessage message) {
-
-    }
-
-    private void handleLoadGame(LoadGameMessage message) {
-        // use the game field in the message to update and draw the board
+        this.game = message.getGame().game();
+        ChessBoardPrinter printer = new ChessBoardPrinter();
+        printer.print(game.getBoard(), perspective);
     }
 
     @Override
     public void notify(NotificationMessage message) {
-
+        System.out.println(">> " + message.getMessage());
     }
 
     @Override
     public void notify(ErrorMessage message) {
-
+        System.err.println("Error: " + message.getErrorMessage());
     }
 }

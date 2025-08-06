@@ -7,15 +7,14 @@ import java.util.Scanner;
 
 public class Repl {
     private final String serverUrl;
-    private final ServerFacade server;
+    private ServerFacade server;
     private final Scanner scanner = new Scanner(System.in);
 
-    public Repl(String serverUrl, ServerMessageObserver observer) throws Exception {
+    public Repl(String serverUrl) throws Exception {
         this.serverUrl = serverUrl;
-        this.server = new ServerFacade(serverUrl, observer);
     }
 
-    public void run() {
+    public void run() throws Exception {
         var preLogin = new PreLoginUI(server);
         CommandResult result;
 
@@ -31,6 +30,10 @@ public class Repl {
             }
 
             if (result.goForward) {
+                var gameplay = new GameplayUI(null, result.getAuthToken(), result.getUsername(), result.getGameID, null);
+                server = new ServerFacade(serverUrl, gameplay);
+                gameplay.setServerFacade(server);
+
                 var postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
                 while (true) {
                     System.out.print(">>> ");
@@ -48,7 +51,6 @@ public class Repl {
                     }
 
                     if (result.goForward) {
-                        var gameplay = new GameplayUI(server, result.getAuthToken(), result.getUsername(), postLogin.getTeamColor());
                         while (true) {
                             System.out.print(">>> ");
                             var gameInput = scanner.nextLine();

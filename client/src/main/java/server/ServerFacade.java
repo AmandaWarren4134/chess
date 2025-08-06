@@ -130,10 +130,16 @@ public class ServerFacade {
     }
 
     public void sendGameCommand(UserGameCommand command) throws Exception {
-        communicator.send(command);
+        if (communicator != null) {
+            communicator.send(command);
+        } else {
+            throw new ResponseException(500, "WebSocketCommunicator not initialized.");
+        }
     }
 
     public void closeWebSocket() throws Exception {
-        communicator.close();
+        if (communicator != null) {
+            communicator.close();
+        }
     }
 }

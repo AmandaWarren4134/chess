@@ -27,9 +27,27 @@ public class WebSocketCommunicator extends Endpoint {
             // set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
-                public void onMessage(String message) {
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    observer.notify(notification);
+                public void onMessage(String messageJson) {
+                    Gson gson = new Gson();
+                    ServerMessage baseMessage = gson.fromJson(messageJson, ServerMessage.class);
+
+                    switch (baseMessage.getServerMessageType()) {
+                        case LOAD_GAME -> {
+                            LoadGameMessage loadMsg = gson.fromJson(messageJson, LoadGameMessage.class);
+                            observer.notify(loadMsg);
+                        }
+                        case NOTIFICATION -> {
+                            NotificationMessage notification = gson.fromJson(messageJson, NotificationMessage.class);
+                            observer.notify(notification);
+                        }
+                        case ERROR -> {
+                            ErrorMessage error = gson.fromJson(messageJson, ErrorMessage.class);
+                            observer.notify(error);
+                        }
+                        default -> {
+                            System.out.println("Unknown message type: " + baseMessage.getServerMessageType());
+                        }
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

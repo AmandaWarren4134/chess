@@ -131,7 +131,7 @@ public class PostLoginUI {
 //            ChessBoardPrinter printer = new ChessBoardPrinter();
 //            printer.print(board, teamColor);
 
-            return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false, authToken, username);
+            return new CommandResult(true, "Successfully joined game " + gameNumber + ".\n", false, false, authToken, username, gameID);
         } catch (ResponseException e) {
             return new CommandResult(false, e.getMessage(), false, false);
         }

@@ -7,6 +7,7 @@ public class CommandResult {
     public final boolean quit;
     public final String authToken;
     public final String username;
+    public final Integer gameID;
 
     public CommandResult(
             boolean success,
@@ -14,20 +15,22 @@ public class CommandResult {
             boolean goToNextLoop,
             boolean quit
     ) {
-        this(success, message, goToNextLoop, quit, null, null);
+        this(success, message, goToNextLoop, quit, null, null, null);
     }
 
-    public CommandResult(boolean success, String message, boolean goToNextLoop, boolean quit, String authToken, String username) {
+    public CommandResult(boolean success, String message, boolean goToNextLoop, boolean quit, String authToken, String username, Integer gameID) {
         this.success = success;
         this.message = message;
         this.goForward = goToNextLoop;
         this.quit = quit;
         this.authToken = authToken;
         this.username = username;
+        this.gameID = gameID;
     }
 
     public String getMessage() {return message;}
     public boolean isQuit() {return quit;}
     public String getAuthToken() {return authToken;}
-    public String getUsername() { return username;}
+    public String getUsername() {return username;}
+    public Integer getGameID() {return gameID;}
 }
