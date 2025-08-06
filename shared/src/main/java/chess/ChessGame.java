@@ -58,6 +58,24 @@ public class ChessGame {
         BLACK
     }
 
+    private boolean isGameOver = false;
+
+    /***
+     * returns boolean if the game is over or not
+     * @return
+     */
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    /***
+     * sets the boolean tracking if the game is over
+     * @param isOver
+     */
+    public void setGameOver(boolean isOver) {
+        this.isGameOver = isOver;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -115,6 +133,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (isGameOver) {
+            throw new InvalidMoveException("Cannot make a move: the game is over.");
+        }
         ChessPiece piece = myBoard.getPiece(move.getStartPosition());
         if (piece == null) {
             throw new InvalidMoveException("Invalid move: Null piece.");

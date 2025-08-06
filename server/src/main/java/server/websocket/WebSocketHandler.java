@@ -48,7 +48,7 @@ public class WebSocketHandler {
             case CONNECT -> connect(command.getAuthToken(), command.getGameID(), session);
             case MAKE_MOVE -> move(command.getAuthToken(), command.getGameID(), ((MakeMoveCommand) command).getMove(), session);
             case LEAVE -> leave(command.getAuthToken(), command.getGameID(), session);
-            case RESIGN -> resign();
+            case RESIGN -> resign(command.getAuthToken(), command.getGameID(), session);
         }
     }
 
@@ -122,7 +122,7 @@ public class WebSocketHandler {
             username = authData.username();
             gameData = gameDAO.getGame(gameID);
         } catch (DataAccessException ex){
-            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID");
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID.");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
             return;
         }
@@ -194,7 +194,7 @@ public class WebSocketHandler {
             username = authData.username();
             gameData = gameDAO.getGame(gameID);
         } catch (DataAccessException ex){
-            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID");
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID.");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
             return;
         }
@@ -209,7 +209,7 @@ public class WebSocketHandler {
             try {
                 gameDAO.updateGame(gameData.gameID(), gameData);
             } catch (DataAccessException e) {
-                ErrorMessage errorMessage = new ErrorMessage("Error: " + e.getMessage());
+                ErrorMessage errorMessage = new ErrorMessage("Error: " + e.getMessage() + ".");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
                 return;
             }
@@ -221,10 +221,48 @@ public class WebSocketHandler {
         // Notify all other clients
         String leaveText = username + " left the game.";
         NotificationMessage leaveMessage = new NotificationMessage(leaveText);
-        connections.broadcast(gameID, leaveMessage);
+        connections.broadcastExcept(authToken, gameID, leaveMessage);
     }
 
-    private void resign() throws IOException {
+    private void resign(String authToken, Integer gameID, Session session) throws IOException {
+        String username;
+        GameData gameData;
+
+        try {
+            AuthData authData = authDAO.getAuth(authToken);
+            username = authData.username();
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException ex){
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid authToken or gameID.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage) + ".");
+            return;
+        }
+
+        // Validate that the user is a player
+        if (!username.equals(gameData.whiteUsername()) &&
+                !username.equals(gameData.blackUsername()) ) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot resign if you are nota  player.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage) + ".");
+            return;
+        }
+
+        // Mark game as over
+        ChessGame game = gameData.game();
+        game.setGameOver(true);
+
+        // Persist the updated game
+        try {
+            gameDAO.updateGame(gameData.gameID(), gameData);
+        } catch (DataAccessException e) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: Failed to update game state.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            return;
+        }
+
+        // Notify all clients
+        String resignText = username + " left the game.";
+        NotificationMessage resignMessage = new NotificationMessage(resignText);
+        connections.broadcast(gameID, resignMessage);
 
     }
 }
