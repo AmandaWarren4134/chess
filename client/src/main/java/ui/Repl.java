@@ -9,6 +9,9 @@ import websocket.messages.NotificationMessage;
 
 import java.util.Scanner;
 
+import static java.awt.Color.BLUE;
+import static java.awt.Color.RED;
+
 public class Repl implements ServerMessageObserver {
     private final String serverUrl;
     private ServerFacade server;
@@ -19,6 +22,9 @@ public class Repl implements ServerMessageObserver {
     private PostLoginUI postLogin;
     private GameplayUI gameplay;
 
+    private enum State { PRE_LOGIN, POST_LOGIN, GAMEPLAY}
+    private State menuState = State.PRE_LOGIN;
+
     public Repl(String serverUrl) throws Exception {
         this.serverUrl = serverUrl;
         this.server = new ServerFacade(serverUrl);
@@ -26,74 +32,83 @@ public class Repl implements ServerMessageObserver {
     }
 
     public void run() throws Exception {
-        // preLogin menu loop
+        // main loop
         while (true) {
             System.out.print(">>> ");
-            var preInput = scanner.nextLine();
-            CommandResult result;
-            result = preLogin.eval(preInput);
-            System.out.println(result.getMessage());
+            String input = scanner.nextLine();
+            CommandResult result = null;
 
-            if (result.goForward) {
+            switch (menuState) {
                 // Enter postLogin menu loop
-                postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
+                case PRE_LOGIN -> {
+                    result = preLogin.eval(input);
+                    System.out.println(result.getMessage());
 
-                // Create WebSocketFacade
-                if (webSocket == null) {
-                    webSocket = new WebSocketFacade(serverUrl, this);
+                    if (result.goForward) {
+                        postLogin = new PostLoginUI(server, result.getAuthToken(), result.getUsername());
+
+                        // Create WebSocketFacade
+                        if (webSocket == null) {
+                            webSocket = new WebSocketFacade(serverUrl, this);
+                        }
+
+                        menuState = State.POST_LOGIN;
+
+                    }
+                    if (result.isQuit()) {
+                        System.out.println("Goodbye!");
+                        return;
+                    }
                 }
-
-                while (true) {
-                    System.out.print(">>> ");
-                    var postInput = scanner.nextLine();
-                    result = postLogin.eval(postInput);
+                // Enter PostLogin loop
+                case POST_LOGIN -> {
+                    result = postLogin.eval(input);
                     System.out.println(result.getMessage());
 
                     if (result.isQuit()) {
                         System.out.println("Goodbye!");
-                        break;
+                        return;
                     }
 
                     if (postLogin.isSignedOut()) {
-                        break;
+                        menuState = State.PRE_LOGIN;
+                        preLogin = new PreLoginUI(server);
                     }
-
                     if (result.goForward) {
-                        gameplay = new GameplayUI(serverUrl, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
-                        gameplay.setServerFacade(server);
-                        while (true) {
-                            System.out.print(">>> ");
-                            var gameInput = scanner.nextLine();
-                            result = gameplay.eval(gameInput);
-                            System.out.println(result.getMessage());
-
-                            if (result.isQuit()) {
-                                System.out.println("Goodbye!");
-                                break;
-                            }
-                        }
+                        gameplay = new GameplayUI(server, webSocket, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
+                        menuState = State.GAMEPLAY;
                     }
                 }
-            }
-            if (result.isQuit()) {
-                System.out.println("Goodbye!");
-                break;
+                // Enter gameplay loop
+                case GAMEPLAY -> {
+                    result = gameplay.eval(input);
+                    System.out.println(result.getMessage());
+
+                    if (result.isQuit()) {
+                        System.out.println("Goodbye!");
+                        return;
+                    }
+                }
             }
         }
     }
 
     @Override
     public void notify(LoadGameMessage message) {
-
+        if (menuState == State.GAMEPLAY && gameplay != null) {
+            gameplay.notify(message);
+        } else {
+            System.out.println("Received LoadGameMessage but not yet in gameplay.");
+        }
     }
 
     @Override
     public void notify(NotificationMessage message) {
-
+        System.out.println(BLUE + ">> " + message.getMessage());
     }
 
     @Override
     public void notify(ErrorMessage message) {
-
+        System.err.println(RED + "Error: " + message.getErrorMessage());
     }
 }

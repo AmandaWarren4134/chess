@@ -60,4 +60,13 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
 
     }
+
+    public void send(Object command) {
+        if (session == null || !session.isOpen()) {
+            System.err.println("WebSocket is not connected.");
+            return;
+        }
+        String json = gson.toJson(command);
+        session.getAsyncRemote().sendText(json);
+    }
 }

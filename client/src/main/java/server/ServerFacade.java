@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import response.*;
 import request.*;
+import websocket.WebSocketFacade;
+import websocket.commands.UserGameCommand;
 
 import java.io.*;
 import java.net.*;
@@ -58,6 +60,16 @@ public class ServerFacade {
         return serverUrl;
     }
 
+    /***
+     * Generic method to make an HTTP request
+     * @param method
+     * @param path
+     * @param request
+     * @param responseClass
+     * @return
+     * @param <T>
+     * @throws ResponseException
+     */
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -123,5 +135,4 @@ public class ServerFacade {
     private boolean isSuccessful (int status) {
         return status / 100 == 2;
     }
-
 }

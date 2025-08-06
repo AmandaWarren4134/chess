@@ -8,6 +8,7 @@ import chess.*;
 import java.util.Arrays;
 import java.util.Collection;
 
+import websocket.WebSocketFacade;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -15,26 +16,24 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-public class GameplayUI implements websocket.ServerMessageObserver {
+public class GameplayUI {
     private ServerFacade server;
+    private WebSocketFacade webSocket;
     private final String authToken;
     private String username;
     private final Integer gameID;
     private final ChessGame.TeamColor perspective;
     private ChessGame game;
 
-    public GameplayUI(String serverUrl, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) throws Exception {
+    public GameplayUI(ServerFacade server, WebSocketFacade webSocket, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) throws Exception {
         this.authToken = authToken;
         this.username = username;
         this.gameID = gameID;
         this.perspective = perspective;
 
-        this.server = new ServerFacade(serverUrl);
-        this.server.setAuthToken(authToken);
-    }
-
-    public void setServerFacade(ServerFacade server) {
         this.server = server;
+        this.server.setAuthToken(authToken);
+        this.webSocket = webSocket;
     }
 
     public CommandResult eval(String input) {
@@ -72,7 +71,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
     private CommandResult leave() {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
-            server.send(command);
+            webSocket.send(command);
             return new CommandResult(true, "You have left the game.", false, true);
         } catch (Exception e) {
             return new CommandResult(false, "Error leaving game: " + e.getMessage(), false, false);
@@ -90,7 +89,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
             ChessMove move = new ChessMove(start, end, null);
 
             MakeMoveCommand command = new MakeMoveCommand(authToken, gameID, move);
-            server.sendGameCommand(command);
+            webSocket.send(command);
 
             return new CommandResult(true, "Move sent. Waiting for server validation.", false, false);
         } catch (Exception e) {
@@ -101,7 +100,7 @@ public class GameplayUI implements websocket.ServerMessageObserver {
     private CommandResult resign() {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
-            server.sendGameCommand(command);
+            webSocket.send(command);
             return new CommandResult(true, "You have resigned.", false, true);
         } catch (Exception e){
             return new CommandResult(false, "Error resigning from the game: " + e.getMessage(), false, false);
@@ -159,20 +158,9 @@ public class GameplayUI implements websocket.ServerMessageObserver {
                 """, false, false);
     }
 
-    @Override
     public void notify(LoadGameMessage message) {
         this.game = message.getGame().game();
         ChessBoardPrinter printer = new ChessBoardPrinter();
         printer.print(game.getBoard(), perspective);
-    }
-
-    @Override
-    public void notify(NotificationMessage message) {
-        System.out.println(">> " + message.getMessage());
-    }
-
-    @Override
-    public void notify(ErrorMessage message) {
-        System.err.println("Error: " + message.getErrorMessage());
     }
 }
