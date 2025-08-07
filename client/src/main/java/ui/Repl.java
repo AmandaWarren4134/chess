@@ -104,7 +104,7 @@ public class Repl implements ServerMessageObserver {
 
     @Override
     public void notify(ErrorMessage message) {
-        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + "\n>>" + message.getErrorMessage() + EscapeSequences.RESET_TEXT_COLOR);
+        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + "\n>> " + message.getErrorMessage() + EscapeSequences.RESET_TEXT_COLOR);
         System.out.print(">>> ");
     }
 }

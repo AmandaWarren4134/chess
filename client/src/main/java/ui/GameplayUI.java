@@ -119,6 +119,8 @@ public class GameplayUI {
             return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
         }
         if (game.isGameOver()) {
+            printer.print(game.getBoard(), perspective);
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Game over." + EscapeSequences.RESET_TEXT_COLOR);
             return new CommandResult(false, "Game is over, no new moves can be made.", false, false);
         }
 
@@ -130,6 +132,9 @@ public class GameplayUI {
                 return new CommandResult(true, "No valid moves from " + params[0], false, false);
             } else {
                 printer.print(game.getBoard(), perspective, validMoves, startPosition);
+                if (game.isGameOver()){
+                    System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Game over." + EscapeSequences.RESET_TEXT_COLOR);
+                }
                 return new CommandResult(true, "", false, false);
             }
         } catch (Exception e) {
@@ -172,6 +177,9 @@ public class GameplayUI {
         } else {
             this.game = message.getGame().game();
             printer.print(game.getBoard(), perspective);
+            if (game.isGameOver()){
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Game over." + EscapeSequences.RESET_TEXT_COLOR);
+            }
         }
     }
 
@@ -182,7 +190,7 @@ public class GameplayUI {
         }
         printer.print(game.getBoard(), perspective);
         if (game.isGameOver()){
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Game over." + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Game over." + EscapeSequences.RESET_TEXT_COLOR);
         }
     }
 }

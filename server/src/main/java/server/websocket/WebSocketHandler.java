@@ -117,11 +117,11 @@ public class WebSocketHandler {
         ChessGame.TeamColor turnColor = game.getTeamTurn();
         ChessGame.TeamColor playerColor = getPlayerColor(username, gameData);
         if (playerColor == null) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: You are not a player in this game.");
+            ErrorMessage errorMessage = new ErrorMessage("Cannot move, you are not a player in this game.");
             session.getRemote().sendString(serializer.toJson(errorMessage));
             return;
         } else if (playerColor != turnColor) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid turn. It is currently " + turnColor + "'s turn.");
+            ErrorMessage errorMessage = new ErrorMessage("Out of turn. It is currently " + turnColor + "'s turn.");
             session.getRemote().sendString(serializer.toJson(errorMessage));
             return;
         }
@@ -130,7 +130,7 @@ public class WebSocketHandler {
         try {
             game.makeMove(move);
         } catch (InvalidMoveException e) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: " + e.getMessage());
+            ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
             session.getRemote().sendString(serializer.toJson(errorMessage));
             return;
         }
@@ -139,7 +139,7 @@ public class WebSocketHandler {
         try {
             gameDAO.updateGame(gameData.gameID(), gameData);
         } catch (DataAccessException e) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: " + e.getMessage());
+            ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
             session.getRemote().sendString(serializer.toJson(errorMessage));
         }
 
@@ -189,7 +189,7 @@ public class WebSocketHandler {
             try {
                 gameDAO.updateGame(gameData.gameID(), gameData);
             } catch (DataAccessException e) {
-                ErrorMessage errorMessage = new ErrorMessage("Error: " + e.getMessage() + ".");
+                ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
                 session.getRemote().sendString(serializer.toJson(errorMessage));
                 return;
             }
@@ -208,7 +208,7 @@ public class WebSocketHandler {
         // Validate that the user is a player
         if (!username.equals(gameData.whiteUsername()) &&
                 !username.equals(gameData.blackUsername()) ) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot resign if you are not a player.");
+            ErrorMessage errorMessage = new ErrorMessage("Cannot resign if you are not a player.");
             session.getRemote().sendString(serializer.toJson(errorMessage));
             return;
         }
@@ -216,7 +216,7 @@ public class WebSocketHandler {
         // Check if the game is over
         ChessGame game = gameData.game();
         if (game.isGameOver()) {
-            session.getRemote().sendString(serializer.toJson(new ErrorMessage("Error: Cannot resign if the game is over. You won!")));
+            session.getRemote().sendString(serializer.toJson(new ErrorMessage("Cannot resign if the game is over.")));
             return;
         }
         // Mark game as over
@@ -226,7 +226,7 @@ public class WebSocketHandler {
         try {
             gameDAO.updateGame(gameData.gameID(), gameData);
         } catch (DataAccessException e) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: Failed to update game state.");
+            ErrorMessage errorMessage = new ErrorMessage("Failed to update game state.");
             session.getRemote().sendString(serializer.toJson(errorMessage));
             return;
         }
