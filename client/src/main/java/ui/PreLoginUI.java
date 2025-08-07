@@ -81,15 +81,11 @@ public class PreLoginUI {
 
     public CommandResult help() {
         return new CommandResult(true, """
+                ---------------LOGIN MENU---------------
                 - register <username> <password> <email> - create an account
                 - login <username> <password> - login to an existing account
                 - quit - quit playing chess
                 - help - get information about possible commands
                 """, false, false);
     }
-
-    public boolean isSignedIn() {
-        return state == State.SIGNEDIN;
-    }
-
 }

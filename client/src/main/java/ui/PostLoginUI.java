@@ -109,7 +109,7 @@ public class PostLoginUI {
 
         int gameNumber;
         try {
-            gameNumber = Integer.parseInt(params[0]) -1;
+            gameNumber = Integer.parseInt(params[0]) - 1;
         } catch (NumberFormatException e) {
             return new CommandResult(false, "Game number must be a number.", false, false);
         }
@@ -187,6 +187,7 @@ public class PostLoginUI {
 
     public CommandResult help() {
         return new CommandResult(true, """
+                ---------------MAIN MENU---------------
                 - create <name> - create a new game
                 - list - print a list of current games
                 - join <id> [WHITE|BLACK] - join an existing game
@@ -199,10 +200,5 @@ public class PostLoginUI {
 
     public boolean isSignedOut() {
         return state == State.SIGNEDOUT;
-    }
-
-
-    public ChessGame.TeamColor getTeamColor() {
-        return teamColor;
     }
 }
