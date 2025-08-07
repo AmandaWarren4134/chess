@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ChessMove {
     private ChessPosition startPosition;
     private ChessPosition endPosition;
-    private ChessPiece.PieceType promotionPiece = null;
+    private ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -64,8 +64,4 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
     }
-    public void setPromotionPiece(ChessPiece.PieceType piece) {
-        promotionPiece = piece;
-    }
-
 }

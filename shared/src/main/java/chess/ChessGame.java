@@ -143,17 +143,11 @@ public class ChessGame {
         // Check if the board has a piece on this square
         ChessPiece piece = myBoard.getPiece(move.getStartPosition());
         if (piece == null) {
-            throw new InvalidMoveException("Invalid move: Null piece.");
+            throw new InvalidMoveException("Invalid move: There is no piece here.");
         }
         // Check that the piece is on the right team
         if (piece.getTeamColor() != currentTeam) {
             throw new InvalidMoveException("Invalid move: It is not this color's turn.");
-        }
-        // Check for pawn promotion
-        int toRow = move.getStartPosition().getRow();
-        ChessPiece.PieceType movePieceType = myBoard.getPiece(move.getStartPosition()).getPieceType();
-        if (movePieceType == PAWN && (toRow == 1 || toRow == 8)) {
-            move = handlePawnPromotion(move);
         }
         // Check if the move is valid
         if (!validMoves(move.getStartPosition()).contains(move)) {
@@ -166,35 +160,6 @@ public class ChessGame {
         } else {
             currentTeam = TeamColor.WHITE;
         }
-    }
-
-    public ChessMove handlePawnPromotion(ChessMove move) {
-        Scanner scanner = new Scanner(System.in);
-        // Pawn Promotion
-            while (true) {
-                System.out.println("Pawn Promotion! Choose piece type: QUEEN, BISHOP, KNIGHT, ROOK");
-                System.out.println(">>> ");
-                String input = scanner.nextLine();
-                switch (input) {
-                    case "QUEEN" -> {
-                        move.setPromotionPiece(QUEEN);
-                        return move;
-                    }
-                    case "BISHOP" -> {
-                        move.setPromotionPiece(BISHOP);
-                        return move;
-                    }
-                    case "KNIGHT" -> {
-                        move.setPromotionPiece(KNIGHT);
-                        return move;
-                    }
-                    case "ROOK" -> {
-                        move.setPromotionPiece(ROOK);
-                        return move;
-                    }
-                    default -> System.out.println("Invalid piece type.");
-                }
-            }
     }
 
     /**

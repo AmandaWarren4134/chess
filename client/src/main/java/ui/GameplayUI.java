@@ -11,6 +11,8 @@ import websocket.WebSocketFacade;
 import websocket.commands.*;
 import websocket.messages.*;
 
+import static chess.ChessPiece.PieceType.PAWN;
+
 public class GameplayUI {
     private ServerFacade server;
     private WebSocketFacade webSocket;
@@ -74,15 +76,31 @@ public class GameplayUI {
     }
 
     public CommandResult move(String[] params) {
-        if (params.length != 2) {
-            return new CommandResult(false, "Usage: move <startPosition> <endPosition>", false, false);
+        if (params.length > 3 ||params.length < 2) {
+            return new CommandResult(false, "Usage: move <start> <end> <promotion>", false, false);
         }
-
         try {
             ChessPosition start = translateToChessPosition(params[0]);
             ChessPosition end = translateToChessPosition(params[1]);
-            ChessMove move = new ChessMove(start, end, null);
+            ChessPiece.PieceType promotionPiece = null;
 
+            // Check for pawn promotion
+            if (game.getBoard().getPiece(start) != null) {
+                int toRow = end.getRow();
+                ChessPiece.PieceType movePieceType = game.getBoard().getPiece(start).getPieceType();
+
+                boolean isPromotion = movePieceType == PAWN && (toRow == 1 || toRow == 8);
+
+                if (isPromotion) {
+                    if (params.length == 3) {
+                        promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+                    } else {
+                        return new CommandResult(false, "Pawn Promotion: Type move <start> <end> QUEEN, BISHOP, KNIGHT, or ROOK.", false, false);
+                    }
+                }
+            }
+
+            ChessMove move = new ChessMove(start, end, promotionPiece);
             MakeMoveCommand command = new MakeMoveCommand(authToken, gameID, move);
             webSocket.send(command);
 
@@ -116,7 +134,7 @@ public class GameplayUI {
 
     public CommandResult highlight(String[] params) {
         if (params.length != 1) {
-            return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
+            return new CommandResult(false, "Usage: highlight <square>", false, false);
         }
         if (game.isGameOver()) {
             printer.print(game.getBoard(), perspective);
@@ -163,9 +181,9 @@ public class GameplayUI {
                 ---------------GAMEPLAY MENU---------------
                 - redraw - redraw the chess board
                 - leave - leave this game
-                - move <startPosition> <endPosition> - make a move, e.g. move a2 a3
+                - move <start> <end> <promotion (if applicable)> - make a move, e.g. move a2 a3
                 - resign - forfeit the game
-                - highlight <squarePosition> - highlight all legal moves
+                - highlight <square> - highlight all legal moves
                 - quit - quit playing chess
                 - help - get information about possible commands
                 """, false, false);

@@ -14,6 +14,5 @@ public class ClientMain {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-
     }
 }
