@@ -16,13 +16,18 @@ public class ChessBoardPrinter {
     private static final String [] COLUMN_LABELS = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final String [] ROW_LABELS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
+    // Constructor for printing normal board
     public void print(ChessBoard board, ChessGame.TeamColor perspective) {
         print(board, perspective, null, null);
     }
+
+    // Constructor for printing board with valid moves highlighted
     public void print(ChessBoard board, ChessGame.TeamColor perspective, Collection<ChessMove> validMoves, ChessPosition highlightPosition) {
+        // Set up PrintStream and clear screen
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
+        // Define rows, columns, and board orientation
         int rowStart, rowEnd, rowStep;
         int colStart, colEnd, colStep;
 
@@ -35,17 +40,13 @@ public class ChessBoardPrinter {
             colStart = 7; colEnd = -1; colStep = -1;
         }
 
+        // Draw the top column labels
         drawHeaders(out, perspective);
 
-        Set<ChessPosition> validPositions;
-        if (validMoves != null) {
-            validPositions = validMoves.stream()
-                    .map(ChessMove::getEndPosition)
-                    .collect(Collectors.toSet());
-        } else {
-            validPositions = Set.of();
-        }
+        // Create a set of valid positions from validMoves; if normal board, create empty set
+        Set<ChessPosition> validPositions = getValidPositions(validMoves);
 
+        // Print main board
         for (int row = rowStart; row != rowEnd; row += rowStep) {
             // left-side row label
             resetColors(out);
@@ -55,21 +56,7 @@ public class ChessBoardPrinter {
                 // Draw each square in the row
                 for (int col = colStart; col != colEnd; col += colStep) {
                     ChessPiece currentPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
-
-                    // Determine the background color
-                    boolean isDark = (row + col) % 2 == 0;
-                    ChessPosition pos = new ChessPosition(row + 1, col + 1);
-                    if (pos.equals(highlightPosition)) {
-                        setYellowHighlight(out);
-                    } else if (validPositions.contains(pos) && isDark) {
-                        setDarkHighlight(out);
-                    } else if (validPositions.contains(pos)) {
-                        setLightHighlight(out);
-                    } else if (isDark) {
-                        setDarkSquare(out);
-                    } else {
-                        setLightSquare(out);
-                    }
+                    setColors(out, row, col, validPositions, highlightPosition);
                     String symbol = getPieceSymbol(currentPiece);
                     out.print(symbol);
                 }
@@ -81,9 +68,35 @@ public class ChessBoardPrinter {
                 resetColors(out);
                 out.println();
         }
-
+        // Draw bottom column labels
         drawHeaders(out, perspective);
+    }
 
+    private Set<ChessPosition> getValidPositions(Collection<ChessMove> validMoves) {
+        if (validMoves != null) {
+            return validMoves.stream()
+                    .map(ChessMove::getEndPosition)
+                    .collect(Collectors.toSet());
+        } else {
+            return Set.of();
+        }
+    }
+
+    private void setColors(PrintStream out, int row, int col, Set<ChessPosition> validPositions, ChessPosition highlightPosition) {
+        // Determine the background color
+        boolean isDark = (row + col) % 2 == 0;
+        ChessPosition pos = new ChessPosition(row + 1, col + 1);
+        if (pos.equals(highlightPosition)) {
+            setYellowHighlight(out);
+        } else if (validPositions.contains(pos) && isDark) {
+            setDarkHighlight(out);
+        } else if (validPositions.contains(pos)) {
+            setLightHighlight(out);
+        } else if (isDark) {
+            setDarkSquare(out);
+        } else {
+            setLightSquare(out);
+        }
     }
 
     private static String[] reverse(String[] array) {
