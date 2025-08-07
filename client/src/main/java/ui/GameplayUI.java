@@ -64,7 +64,7 @@ public class GameplayUI {
 
     private CommandResult leave() {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            var command = new LeaveGameCommand(authToken, gameID);
             webSocket.send(command);
             return new CommandResult(true, "You have left the game.", true, false);
         } catch (Exception e) {
