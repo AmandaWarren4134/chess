@@ -3,7 +3,6 @@ package ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
@@ -47,7 +46,7 @@ public class PostLoginUI {
                 case "join" -> join(params);
                 case "observe" -> observe(params);
                 case "help" -> help();
-                case "quit" -> new CommandResult(true, "Exiting back to login menu...", false, true);
+                case "quit" -> new CommandResult(true, "Exiting...", false, true);
                 default -> new CommandResult(false, "Unknown command, type \"help\" to see more commands.", false, false);
             };
         } catch (ResponseException ex) {
@@ -90,6 +89,11 @@ public class PostLoginUI {
         var gameName = params[0];
         var request = new CreateRequest(gameName, authToken);
         CreateResult result = server.create(request);
+
+        // Update lastGameList after creating game
+        var listRequest = new ListRequest(authToken);
+        ListResult listResult = server.list(listRequest);
+        lastGameList = listResult.games();
 
         if( result != null && result.gameID() > 0) {
             return new CommandResult(true, "Successfully created game.\n", false, false);

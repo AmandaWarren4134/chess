@@ -72,7 +72,7 @@ public class Repl implements ServerMessageObserver {
             preLogin = new PreLoginUI(server);
         }
         if (result.goForward) {
-            gameplay = new GameplayUI(server, webSocket, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
+            gameplay = new GameplayUI(server, webSocket, result.getAuthToken(), result.getGameID(), null);
             menuState = State.GAMEPLAY;
         }
         return result;

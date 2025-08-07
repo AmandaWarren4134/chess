@@ -1,7 +1,5 @@
 package ui;
 
-import exception.ResponseException;
-import model.GameData;
 import server.ServerFacade;
 import chess.*;
 
@@ -9,18 +7,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import websocket.WebSocketFacade;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
+import websocket.commands.*;
+import websocket.messages.*;
 
 public class GameplayUI {
     private ServerFacade server;
     private WebSocketFacade webSocket;
     private final String authToken;
-    private String username;
     private final Integer gameID;
     private final ChessGame.TeamColor perspective;
     private ChessGame game;
@@ -29,11 +22,9 @@ public class GameplayUI {
     public GameplayUI(ServerFacade server,
                       WebSocketFacade webSocket,
                       String authToken,
-                      String username,
                       Integer gameID,
                       ChessGame.TeamColor perspective) throws Exception {
         this.authToken = authToken;
-        this.username = username;
         this.gameID = gameID;
         this.perspective = perspective;
 
@@ -55,8 +46,8 @@ public class GameplayUI {
                 case "resign" -> resign();
                 case "highlight" -> highlight(params);
                 case "help" -> help();
-                case "quit" -> new CommandResult(true, "Exiting back to main menu...", false, true);
-                default -> new CommandResult(false, "Type \"help\" to see more commands.", false, false);
+                case "quit" -> new CommandResult(true, "Exiting game...", false, true);
+                default -> new CommandResult(false, "Type 'help' to see more commands.", false, false);
             };
         } catch (Exception e) {
             return new CommandResult(false, "Error processing command: " + e.getMessage(), false, false);
@@ -68,7 +59,6 @@ public class GameplayUI {
             return new CommandResult(false, "No game to redraw yet.", false, false);
         }
         drawChessBoard();
-
         return new CommandResult(true, "", false, false);
     }
 
@@ -103,7 +93,7 @@ public class GameplayUI {
 
     private CommandResult resign() {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+            var command = new ResignCommand(authToken, gameID);
             webSocket.send(command);
             return new CommandResult(true, "You have resigned.", false, false);
         } catch (Exception e){
@@ -149,6 +139,7 @@ public class GameplayUI {
     }
     public CommandResult help() {
         return new CommandResult(true, """
+                ---------------GAMEPLAY MENU---------------
                 - redraw - redraw the chess board
                 - leave - leave this game
                 - move <startPosition> <endPosition> - make a move, e.g. move a2 a3
@@ -160,11 +151,8 @@ public class GameplayUI {
     }
 
     public void notify(LoadGameMessage message) {
-
-        System.out.println("LoadGameMessage received");
         if (message.getGame() == null) {
             System.err.println("Warning: LoadGameMessage.getGame() is null");
-
         } else {
             this.game = message.getGame().game();
             printer.print(game.getBoard(), perspective);
