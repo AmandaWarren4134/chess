@@ -114,7 +114,6 @@ public class ServerFacade {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
             String reqData = GSON.toJson(request);
-            System.out.println("Request JSON: " + reqData); // DEBUG
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }

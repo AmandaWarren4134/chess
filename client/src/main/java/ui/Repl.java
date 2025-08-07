@@ -98,13 +98,13 @@ public class Repl implements ServerMessageObserver {
 
     @Override
     public void notify(NotificationMessage message) {
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "\n>> " + message.getMessage());
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "\n>> " + message.getMessage() + EscapeSequences.RESET_TEXT_COLOR);
         System.out.print(">>> ");
     }
 
     @Override
     public void notify(ErrorMessage message) {
-        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + "\n>>" + message.getErrorMessage());
+        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + "\n>>" + message.getErrorMessage() + EscapeSequences.RESET_TEXT_COLOR);
         System.out.print(">>> ");
     }
 }

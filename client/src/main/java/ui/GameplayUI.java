@@ -5,6 +5,7 @@ import chess.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Scanner;
 
 import websocket.WebSocketFacade;
 import websocket.commands.*;
@@ -93,9 +94,21 @@ public class GameplayUI {
 
     private CommandResult resign() {
         try {
-            var command = new ResignCommand(authToken, gameID);
-            webSocket.send(command);
-            return new CommandResult(true, "You have resigned.", false, false);
+            // Confirm resignation
+            System.out.println("Do you want to resign? Y/N");
+            System.out.println(">>> ");
+            Scanner scanner = new Scanner(System.in);
+            String input = scanner.nextLine();
+            if (input.equals("Y")) {
+                var command = new ResignCommand(authToken, gameID);
+                webSocket.send(command);
+                return new CommandResult(true, "You have resigned.", false, false);
+            } else if (input.equals("N")) {
+                return new CommandResult(true, "", false, false);
+            } else {
+                return new CommandResult(false, "Invalid response, please type 'Y' or 'N'.", false, false);
+            }
+
         } catch (Exception e){
             return new CommandResult(false, "Error resigning from the game: " + e.getMessage(), false, false);
         }
