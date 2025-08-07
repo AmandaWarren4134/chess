@@ -13,7 +13,7 @@ public class ServerFacade {
     private final String serverUrl;
     private String authToken;
 
-    private static final Gson Gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     public ServerFacade(String url) {
         this.serverUrl = url;
@@ -99,7 +99,7 @@ public class ServerFacade {
             String rawJson = new String(stream.readAllBytes());
 
             if (responseClass != null && !rawJson.isBlank()) {
-                return Gson.fromJson(rawJson, responseClass);
+                return GSON.fromJson(rawJson, responseClass);
             }
             return null;
 
@@ -113,7 +113,7 @@ public class ServerFacade {
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = Gson.toJson(request);
+            String reqData = GSON.toJson(request);
             System.out.println("Request JSON: " + reqData); // DEBUG
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());

@@ -33,61 +33,59 @@ public class Repl implements ServerMessageObserver {
         while (true) {
             CommandResult result = null;
             String input = scanner.nextLine();
+
             switch (menuState) {
-                // Enter postLogin menu loop
-                case PRE_LOGIN -> {
-                    result = preLogin.eval(input);
-                    System.out.println(result.getMessage());
-
-                    if (result.goForward) {
-                        // Create WebSocketFacade
-                        if (webSocket == null) {
-                            webSocket = new WebSocketFacade(serverUrl, this);
-                        }
-
-                        postLogin = new PostLoginUI(server, webSocket, result.getAuthToken(), result.getUsername());
-                        menuState = State.POST_LOGIN;
-                    }
-                    if (result.isQuit()) {
-                        System.out.println("Goodbye!");
-                        return;
-                    }
-                }
-                // Enter PostLogin loop
-                case POST_LOGIN -> {
-                    result = postLogin.eval(input);
-                    System.out.println(result.getMessage());
-
-                    if (result.isQuit()) {
-                        System.out.println("Goodbye!");
-                        return;
-                    }
-
-                    if (postLogin.isSignedOut()) {
-                        menuState = State.PRE_LOGIN;
-                        preLogin = new PreLoginUI(server);
-                    }
-                    if (result.goForward) {
-                        gameplay = new GameplayUI(server, webSocket, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
-                        menuState = State.GAMEPLAY;
-                    }
-                }
-                // Enter gameplay loop
-                case GAMEPLAY -> {
-                    result = gameplay.eval(input);
-                    System.out.println(result.getMessage());
-
-                    if (result.isQuit()) {
-                        System.out.println("Goodbye!");
-                        return;
-                    }
-                    if (result.goForward) {
-                        menuState = State.POST_LOGIN;
-                    }
-                }
+                case PRE_LOGIN -> {result = handlePreLogin(input);}
+                case POST_LOGIN -> {result = handlePostLogin(input);}
+                case GAMEPLAY -> {result = handleGameplay(input);}
+            }
+            if (result.isQuit()) {
+                System.out.println("Goodbye!");
+                return;
             }
             System.out.print("\n>>> ");
         }
+    }
+
+    private CommandResult handlePreLogin(String input) throws Exception {
+        CommandResult result = preLogin.eval(input);
+        System.out.println(result.getMessage());
+
+        if (result.goForward) {
+            // Create WebSocketFacade
+            if (webSocket == null) {
+                webSocket = new WebSocketFacade(serverUrl, this);
+            }
+
+            postLogin = new PostLoginUI(server, webSocket, result.getAuthToken(), result.getUsername());
+            menuState = State.POST_LOGIN;
+        }
+        return result;
+    }
+
+    private CommandResult handlePostLogin(String input) throws Exception {
+        CommandResult result = postLogin.eval(input);
+        System.out.println(result.getMessage());
+
+        if (postLogin.isSignedOut()) {
+            menuState = State.PRE_LOGIN;
+            preLogin = new PreLoginUI(server);
+        }
+        if (result.goForward) {
+            gameplay = new GameplayUI(server, webSocket, result.getAuthToken(), result.getUsername(), result.getGameID(), null);
+            menuState = State.GAMEPLAY;
+        }
+        return result;
+    }
+
+    private CommandResult handleGameplay(String input) throws Exception {
+        CommandResult result =  gameplay.eval(input);
+        System.out.println(result.getMessage());
+
+        if (result.goForward) {
+            menuState = State.POST_LOGIN;
+        }
+        return result;
     }
 
     @Override
