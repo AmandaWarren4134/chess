@@ -182,7 +182,7 @@ public class GameplayUI {
         }
         printer.print(game.getBoard(), perspective);
         if (game.isGameOver()){
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Game over." + EscapeSequences.RESET_TEXT_COLOR)
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Game over." + EscapeSequences.RESET_TEXT_COLOR);
         }
     }
 }

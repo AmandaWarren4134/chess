@@ -144,7 +144,8 @@ public class PostLoginUI {
                     false,
                     authToken,
                     username,
-                    gameID);
+                    gameID,
+                    teamColor);
         } catch (ResponseException e) {
             return new CommandResult(false, e.getMessage(), false, false);
         }
@@ -181,7 +182,8 @@ public class PostLoginUI {
                 false,
                 authToken,
                 username,
-                gameID
+                gameID,
+                    null
             );
     }
 
