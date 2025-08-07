@@ -32,8 +32,9 @@ public class Repl implements ServerMessageObserver {
     public void run() throws Exception {
         // main loop
         while (true) {
-            CommandResult result = null;
+            System.out.print(">>> ");
             String input = scanner.nextLine();
+            CommandResult result = null;
 
             switch (menuState) {
                 case PRE_LOGIN -> {result = handlePreLogin(input);}
@@ -44,14 +45,12 @@ public class Repl implements ServerMessageObserver {
                 System.out.println("Goodbye!");
                 return;
             }
-            System.out.print("\n>>> ");
         }
     }
 
     private CommandResult handlePreLogin(String input) throws Exception {
         CommandResult result = preLogin.eval(input);
         System.out.println(result.getMessage());
-
         if (result.goForward) {
             // Create WebSocketFacade
             if (webSocket == null) {
@@ -67,7 +66,6 @@ public class Repl implements ServerMessageObserver {
     private CommandResult handlePostLogin(String input) throws Exception {
         CommandResult result = postLogin.eval(input);
         System.out.println(result.getMessage());
-
         if (postLogin.isSignedOut()) {
             menuState = State.PRE_LOGIN;
             preLogin = new PreLoginUI(server);
@@ -82,7 +80,6 @@ public class Repl implements ServerMessageObserver {
     private CommandResult handleGameplay(String input) throws Exception {
         CommandResult result =  gameplay.eval(input);
         System.out.println(result.getMessage());
-
         if (result.goForward) {
             menuState = State.POST_LOGIN;
         }
@@ -93,6 +90,7 @@ public class Repl implements ServerMessageObserver {
     public void notify(LoadGameMessage message) {
         if (menuState == State.GAMEPLAY && gameplay != null) {
             gameplay.notify(message);
+            System.out.print(">>> ");
         } else {
             System.out.println("Received LoadGameMessage but not yet in gameplay.");
         }
@@ -100,11 +98,13 @@ public class Repl implements ServerMessageObserver {
 
     @Override
     public void notify(NotificationMessage message) {
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + ">> " + message.getMessage());
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "\n>> " + message.getMessage());
+        System.out.print(">>> ");
     }
 
     @Override
     public void notify(ErrorMessage message) {
-        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + message.getErrorMessage());
+        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + "\n>>" + message.getErrorMessage());
+        System.out.print(">>> ");
     }
 }

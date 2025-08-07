@@ -95,7 +95,7 @@ public class WebSocketHandler {
         if (team.equals("OBSERVER")) {
             notificationText = username + "joined the game as an observer.";
         } else {
-            notificationText = username + "joined the game as " + team + ".";
+            notificationText = username + " joined the game as " + team + ".";
         }
 
         return new NotificationMessage(notificationText);

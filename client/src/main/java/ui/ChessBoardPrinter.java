@@ -41,6 +41,7 @@ public class ChessBoardPrinter {
         }
 
         // Draw the top column labels
+        System.out.println("\n");
         drawHeaders(out, perspective);
 
         // Create a set of valid positions from validMoves; if normal board, create empty set
