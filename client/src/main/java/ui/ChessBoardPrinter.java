@@ -71,6 +71,7 @@ public class ChessBoardPrinter {
         }
         // Draw bottom column labels
         drawHeaders(out, perspective);
+        // Let players know if the game is over
     }
 
     private Set<ChessPosition> getValidPositions(Collection<ChessMove> validMoves) {

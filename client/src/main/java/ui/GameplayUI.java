@@ -118,6 +118,9 @@ public class GameplayUI {
         if (params.length != 1) {
             return new CommandResult(false, "Usage: highlight <squarePosition>", false, false);
         }
+        if (game.isGameOver()) {
+            return new CommandResult(false, "Game is over, no new moves can be made.", false, false);
+        }
 
         try {
             ChessPosition startPosition = translateToChessPosition(params[0]);
@@ -136,7 +139,7 @@ public class GameplayUI {
 
     private ChessPosition translateToChessPosition(String startSquare) {
         if (startSquare.length() != 2) {
-            throw new IllegalArgumentException("Invalid square: " + startSquare);
+            throw new IllegalArgumentException("Invalid Position: " + startSquare);
         }
 
         char colChar = Character.toLowerCase(startSquare.charAt(0));
@@ -146,7 +149,7 @@ public class GameplayUI {
         int row = Character.getNumericValue(rowChar);
 
         if (col < 1 || col > 8 || row < 1 || row > 8) {
-            throw new IllegalArgumentException("Invalid Square: " + startSquare);
+            throw new IllegalArgumentException("Invalid Position: " + startSquare);
         }
         return new ChessPosition(row, col);
     }
@@ -178,5 +181,8 @@ public class GameplayUI {
             return;
         }
         printer.print(game.getBoard(), perspective);
+        if (game.isGameOver()){
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Game over." + EscapeSequences.RESET_TEXT_COLOR)
+        }
     }
 }
