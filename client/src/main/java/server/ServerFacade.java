@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import response.*;
 import request.*;
-import websocket.WebSocketFacade;
-import websocket.commands.UserGameCommand;
 
 import java.io.*;
 import java.net.*;
@@ -15,7 +13,7 @@ public class ServerFacade {
     private final String serverUrl;
     private String authToken;
 
-    private static final Gson gson = new Gson();
+    private static final Gson Gson = new Gson();
 
     public ServerFacade(String url) {
         this.serverUrl = url;
@@ -101,7 +99,7 @@ public class ServerFacade {
             String rawJson = new String(stream.readAllBytes());
 
             if (responseClass != null && !rawJson.isBlank()) {
-                return gson.fromJson(rawJson, responseClass);
+                return Gson.fromJson(rawJson, responseClass);
             }
             return null;
 
@@ -115,7 +113,7 @@ public class ServerFacade {
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = gson.toJson(request);
+            String reqData = Gson.toJson(request);
             System.out.println("Request JSON: " + reqData); // DEBUG
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());

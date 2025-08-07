@@ -26,7 +26,12 @@ public class GameplayUI {
     private ChessGame game;
     private final ChessBoardPrinter printer = new ChessBoardPrinter();
 
-    public GameplayUI(ServerFacade server, WebSocketFacade webSocket, String authToken, String username, Integer gameID, ChessGame.TeamColor perspective) throws Exception {
+    public GameplayUI(ServerFacade server,
+                      WebSocketFacade webSocket,
+                      String authToken,
+                      String username,
+                      Integer gameID,
+                      ChessGame.TeamColor perspective) throws Exception {
         this.authToken = authToken;
         this.username = username;
         this.gameID = gameID;
