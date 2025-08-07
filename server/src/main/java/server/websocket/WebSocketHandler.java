@@ -148,7 +148,8 @@ public class WebSocketHandler {
         connections.broadcast(gameID, gameMessage);
 
         // Notify other players of the move
-        String moveText = username + " moved " + move.getStartPosition() + " to " + move.getEndPosition() + ".";
+        String moveText = username + " moved " + translateFromChessPosition(move.getStartPosition())
+                + " to " + translateFromChessPosition(move.getEndPosition()) + ".";
         NotificationMessage notification = new NotificationMessage(moveText);
         connections.broadcastExcept(authToken, gameID, notification);
 
@@ -169,6 +170,12 @@ public class WebSocketHandler {
             NotificationMessage stalemate = new NotificationMessage(stalemateText);
             connections.broadcast(gameID, stalemate);
         }
+    }
+
+    private String translateFromChessPosition(ChessPosition position) {
+        int col = position.getColumn();
+        char colChar = (char) ('a' + (col - 1));
+        return String.valueOf(colChar) + position.getRow();
     }
 
     private void leave(String authToken, String username, Integer gameID, GameData gameData, Session session) throws IOException {

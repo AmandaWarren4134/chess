@@ -51,7 +51,7 @@ public class GameplayUI {
                 case "highlight" -> highlight(params);
                 case "help" -> help();
                 case "quit" -> new CommandResult(true, "Exiting back to main menu...", false, true);
-                default -> new CommandResult(false, "Unknown command, type \"help\" to see more commands.", false, false);
+                default -> new CommandResult(false, "Type \"help\" to see more commands.", false, false);
             };
         } catch (Exception e) {
             return new CommandResult(false, "Error processing command: " + e.getMessage(), false, false);
@@ -77,7 +77,7 @@ public class GameplayUI {
         }
     }
 
-    public CommandResult move(String[] params) throws Exception {
+    public CommandResult move(String[] params) {
         if (params.length != 2) {
             return new CommandResult(false, "Usage: move <startPosition> <endPosition>", false, false);
         }
@@ -118,7 +118,7 @@ public class GameplayUI {
             if (validMoves == null || validMoves.isEmpty()) {
                 return new CommandResult(true, "No valid moves from " + params[0], false, false);
             } else {
-                printer.print(game.getBoard(), perspective, validMoves);
+                printer.print(game.getBoard(), perspective, validMoves, startPosition);
                 return new CommandResult(true, "", false, false);
             }
         } catch (Exception e) {

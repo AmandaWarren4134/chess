@@ -13,21 +13,20 @@ import static ui.EscapeSequences.*;
 
 public class ChessBoardPrinter {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_WIDTH = 3;
     private static final String [] COLUMN_LABELS = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final String [] ROW_LABELS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
     public void print(ChessBoard board, ChessGame.TeamColor perspective) {
-        print(board, perspective, null);
+        print(board, perspective, null, null);
     }
-    public void print(ChessBoard board, ChessGame.TeamColor perspective, Collection<ChessMove> validMoves) {
+    public void print(ChessBoard board, ChessGame.TeamColor perspective, Collection<ChessMove> validMoves, ChessPosition highlightPosition) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
         int rowStart, rowEnd, rowStep;
         int colStart, colEnd, colStep;
 
-        if (perspective == WHITE) {
+        if (perspective == WHITE || perspective == null) {
             rowStart = 7; rowEnd = -1; rowStep = -1;
             colStart = 0; colEnd = 8; colStep = 1;
         }
@@ -38,12 +37,14 @@ public class ChessBoardPrinter {
 
         drawHeaders(out, perspective);
 
-        Set<ChessPosition> validPositions = (validMoves != null)
-                ? validMoves.stream()
-                .map(ChessMove::getEndPosition)
-                .collect(Collectors.toSet())
-                : Set.of();
-
+        Set<ChessPosition> validPositions;
+        if (validMoves != null) {
+            validPositions = validMoves.stream()
+                    .map(ChessMove::getEndPosition)
+                    .collect(Collectors.toSet());
+        } else {
+            validPositions = Set.of();
+        }
 
         for (int row = rowStart; row != rowEnd; row += rowStep) {
             // left-side row label
@@ -55,15 +56,16 @@ public class ChessBoardPrinter {
                 for (int col = colStart; col != colEnd; col += colStep) {
                     ChessPiece currentPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
 
+                    // Determine the background color
                     boolean isDark = (row + col) % 2 == 0;
                     ChessPosition pos = new ChessPosition(row + 1, col + 1);
-                    if (validPositions.contains(pos) && isDark) {
+                    if (pos.equals(highlightPosition)) {
+                        setYellowHighlight(out);
+                    } else if (validPositions.contains(pos) && isDark) {
                         setDarkHighlight(out);
-                    }
-                    else if (validPositions.contains(pos)) {
+                    } else if (validPositions.contains(pos)) {
                         setLightHighlight(out);
-                    }
-                    else if (isDark) {
+                    } else if (isDark) {
                         setDarkSquare(out);
                     } else {
                         setLightSquare(out);
@@ -95,7 +97,7 @@ public class ChessBoardPrinter {
     private static void drawHeaders(PrintStream out, ChessGame.TeamColor perspective) {
         setBlack(out);
 
-        String[] columns = (perspective == WHITE) ? COLUMN_LABELS : reverse(COLUMN_LABELS);
+        String[] columns = (perspective == WHITE || perspective == null) ? COLUMN_LABELS : reverse(COLUMN_LABELS);
 
         out.print("   ");
 
@@ -157,12 +159,17 @@ public class ChessBoardPrinter {
 
     private static void setDarkHighlight(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREEN);
-        out.print(SET_TEXT_COLOR_YELLOW);
+        out.print(SET_TEXT_COLOR_RED);
     }
 
     private static void setLightHighlight(PrintStream out) {
         out.print(SET_BG_COLOR_GREEN);
-        out.print(SET_TEXT_COLOR_YELLOW);
+        out.print(SET_TEXT_COLOR_RED);
+    }
+
+    private static void setYellowHighlight(PrintStream out) {
+        out.print(SET_BG_COLOR_YELLOW);
+        out.print(SET_TEXT_COLOR_BLACK);
     }
 
     private static void resetColors(PrintStream out) {
