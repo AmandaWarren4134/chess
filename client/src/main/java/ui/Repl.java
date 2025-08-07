@@ -6,12 +6,13 @@ import websocket.ServerMessageObserver;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import ui.EscapeSequences;
 
 import java.util.Scanner;
 
 public class Repl implements ServerMessageObserver {
     private final String serverUrl;
-    private ServerFacade server;
+    private final ServerFacade server;
     private WebSocketFacade webSocket;
     private final Scanner scanner = new Scanner(System.in);
 
@@ -99,11 +100,11 @@ public class Repl implements ServerMessageObserver {
 
     @Override
     public void notify(NotificationMessage message) {
-        System.out.println(">> " + message.getMessage());
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + ">> " + message.getMessage());
     }
 
     @Override
     public void notify(ErrorMessage message) {
-        System.err.println("Error: " + message.getErrorMessage());
+        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + message.getErrorMessage());
     }
 }
