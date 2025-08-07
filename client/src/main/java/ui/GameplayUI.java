@@ -71,7 +71,7 @@ public class GameplayUI {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
             webSocket.send(command);
-            return new CommandResult(true, "You have left the game.", false, true);
+            return new CommandResult(true, "You have left the game.", true, false);
         } catch (Exception e) {
             return new CommandResult(false, "Error leaving game: " + e.getMessage(), false, false);
         }
@@ -90,7 +90,7 @@ public class GameplayUI {
             MakeMoveCommand command = new MakeMoveCommand(authToken, gameID, move);
             webSocket.send(command);
 
-            return new CommandResult(true, "Move sent. Waiting for server validation.", false, false);
+            return new CommandResult(true, "", false, false);
         } catch (Exception e) {
             return new CommandResult(false, "Invalid move: " + e.getMessage(), false, false);
         }
@@ -100,7 +100,7 @@ public class GameplayUI {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
             webSocket.send(command);
-            return new CommandResult(true, "You have resigned.", false, true);
+            return new CommandResult(true, "You have resigned.", false, false);
         } catch (Exception e){
             return new CommandResult(false, "Error resigning from the game: " + e.getMessage(), false, false);
         }

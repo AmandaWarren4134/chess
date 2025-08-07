@@ -117,7 +117,7 @@ public class WebSocketHandler {
         ChessGame.TeamColor turnColor = game.getTeamTurn();
         ChessGame.TeamColor playerColor = getPlayerColor(username, gameData);
         if (playerColor == null) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid player.");
+            ErrorMessage errorMessage = new ErrorMessage("Error: You are not a player in this game.");
             session.getRemote().sendString(serializer.toJson(errorMessage));
             return;
         } else if (playerColor != turnColor) {
@@ -196,7 +196,7 @@ public class WebSocketHandler {
         }
 
         // Remove the user from WebSocket connections
-        connections.remove(authToken);
+        connections.removeFromGame(gameID, authToken);
 
         // Notify all other clients
         String leaveText = username + " left the game.";

@@ -30,7 +30,6 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String messageJson) {
-                    System.out.println("WebSocket received: " + messageJson);
                     ServerMessage baseMessage = gson.fromJson(messageJson, ServerMessage.class);
 
                     // pass the message from the server to the repl
@@ -68,7 +67,6 @@ public class WebSocketFacade extends Endpoint {
             return;
         }
         String json = gson.toJson(command);
-        System.out.println("Sending WebSocket message: " + json);
         session.getAsyncRemote().sendText(json);
     }
 }

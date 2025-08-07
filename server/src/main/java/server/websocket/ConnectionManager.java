@@ -27,6 +27,12 @@ public class ConnectionManager {
         connections.remove(authToken);
     }
 
+    public void removeFromGame(int gameID, String authToken) {
+        Set<String> gameClients = gameConnections.get(gameID);
+        gameClients.remove(authToken);
+        gameConnections.put(gameID, gameClients);
+    }
+
     public void broadcast(int gameID, Object message) throws IOException {
         String json = gson.toJson(message);
 

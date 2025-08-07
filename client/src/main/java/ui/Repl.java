@@ -31,10 +31,8 @@ public class Repl implements ServerMessageObserver {
     public void run() throws Exception {
         // main loop
         while (true) {
-            System.out.print(">>> ");
-            String input = scanner.nextLine();
             CommandResult result = null;
-
+            String input = scanner.nextLine();
             switch (menuState) {
                 // Enter postLogin menu loop
                 case PRE_LOGIN -> {
@@ -57,7 +55,6 @@ public class Repl implements ServerMessageObserver {
                 }
                 // Enter PostLogin loop
                 case POST_LOGIN -> {
-                    System.out.println("You're logged in! Type \"help\" to view available commands.");
                     result = postLogin.eval(input);
                     System.out.println(result.getMessage());
 
@@ -77,7 +74,6 @@ public class Repl implements ServerMessageObserver {
                 }
                 // Enter gameplay loop
                 case GAMEPLAY -> {
-                    System.out.println("Welcome to the game! Type \"help\" to view available commands.");
                     result = gameplay.eval(input);
                     System.out.println(result.getMessage());
 
@@ -90,6 +86,7 @@ public class Repl implements ServerMessageObserver {
                     }
                 }
             }
+            System.out.print("\n>>> ");
         }
     }
 
